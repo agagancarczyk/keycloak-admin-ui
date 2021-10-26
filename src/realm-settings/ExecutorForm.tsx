@@ -26,6 +26,14 @@ import {
   COMPONENTS,
   isValidComponentType,
 } from "../client-scopes/add/components/components";
+import type ClientPolicyExecutorRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientPolicyExecutorRepresentation";
+
+type ExecutorForm = Required<ClientPolicyExecutorRepresentation>;
+
+const defaultValues: ExecutorForm = {
+  configuration: {},
+  executor: "",
+};
 
 export const ExecutorForm = () => {
   const { t } = useTranslation("realm-settings");
@@ -47,7 +55,7 @@ export const ExecutorForm = () => {
     ClientProfileRepresentation[]
   >([]);
   const [profiles, setProfiles] = useState<ClientProfileRepresentation[]>([]);
-  const form = useForm();
+  const form = useForm<ExecutorForm>({ defaultValues });
   const { control } = form;
 
   useFetch(
@@ -65,35 +73,24 @@ export const ExecutorForm = () => {
 
   const save = async () => {
     const formValues = form.getValues();
+    const updatedProfiles = profiles.map((profile) => {
+      if (profile.name !== profileName) {
+        return profile;
+      }
 
-    const createdExecutors = {
-      executor: formValues.executor,
-      configuration: { ...formValues },
-    };
+      const executors = (profile.executors ?? []).concat({
+        executor: formValues.executor,
+        configuration: formValues.configuration,
+      });
 
-    delete createdExecutors.configuration.executor;
-
-    const profileToUpdate = profiles.filter(
-      (profile) => profile.name === profileName
-    );
-
-    if (profileToUpdate[0].executors!.length > 0) {
-      const executors = profileToUpdate[0].executors;
-      profileToUpdate[0].executors = executors?.concat([createdExecutors]);
-    } else {
-      profileToUpdate[0].executors = [createdExecutors];
-    }
-
-    const updatedProfilesList = profiles.map(
-      (profile) =>
-        profileToUpdate.find(
-          (updatedProfile) => updatedProfile.name === profile.name
-        ) || profile
-    );
-
+      return {
+        ...profile,
+        executors,
+      };
+    });
     try {
       await adminClient.clientPolicies.createProfiles({
-        profiles: updatedProfilesList,
+        profiles: updatedProfiles,
         globalProfiles: globalProfiles,
       });
       addAlert(t("realm-settings:addExecutorSuccess"), AlertVariant.success);
@@ -112,7 +109,7 @@ export const ExecutorForm = () => {
             label={t("executorType")}
             fieldId="kc-executorType"
             labelIcon={
-              executors.length > 0 && executors[0].helpText !== "" ? (
+              executors.length > 0 && executors[0].helpText! !== "" ? (
                 <HelpItem
                   helpText={executors[0].helpText}
                   forLabel={t("executorTypeHelpText")}
@@ -120,9 +117,7 @@ export const ExecutorForm = () => {
                     label: t("executorTypeHelpText"),
                   })}
                 />
-              ) : (
-                <> </>
-              )
+              ) : undefined
             }
           >
             <Controller

@@ -92,7 +92,6 @@ export const ClientProfileForm = () => {
 
   const save = async (form: ClientProfileForm) => {
     let allProfiles: ClientProfileRepresentation[] = [];
-    let createdProfileName: string = "";
 
     if (editMode) {
       const profileToUpdate = profiles.filter(
@@ -101,7 +100,6 @@ export const ClientProfileForm = () => {
       profileToUpdate[0].name = form.name;
       profileToUpdate[0].description = form.description;
 
-      createdProfileName = profileToUpdate[0].name;
       allProfiles = profiles;
     } else {
       const createdProfile = {
@@ -109,7 +107,6 @@ export const ClientProfileForm = () => {
         executors: [],
       };
 
-      createdProfileName = createdProfile.name;
       allProfiles = profiles.concat(createdProfile);
     }
 
@@ -119,27 +116,21 @@ export const ClientProfileForm = () => {
         globalProfiles: globalProfiles,
       });
 
-      if (editMode) {
-        addAlert(
-          t("realm-settings:updateClientProfileSuccess"),
-          AlertVariant.success
-        );
-      } else {
-        addAlert(
-          t("realm-settings:createClientProfileSuccess"),
-          AlertVariant.success
-        );
-      }
-
-      history.push(
-        `/${realm}/realm-settings/clientPolicies/${createdProfileName}`
+      addAlert(
+        editMode
+          ? t("realm-settings:updateClientProfileSuccess")
+          : t("realm-settings:createClientProfileSuccess"),
+        AlertVariant.success
       );
+
+      history.push(`/${realm}/realm-settings/clientPolicies/${form.name}`);
     } catch (error) {
-      if (editMode) {
-        addError("realm-settings:updateClientProfileError", error);
-      } else {
-        addError("realm-settings:createClientProfileError", error);
-      }
+      addError(
+        editMode
+          ? "realm-settings:updateClientProfileError"
+          : "realm-settings:createClientProfileError",
+        error
+      );
     }
   };
 
@@ -191,24 +182,16 @@ export const ClientProfileForm = () => {
     },
   });
 
-  const profile = profiles.filter((profile) => profile.name === profileName);
-  const profileExecutors = profile[0]?.executors || [];
-  const globalProfile = globalProfiles.filter(
+  const profile = profiles.find((profile) => profile.name === profileName);
+  const profileExecutors = profile?.executors || [];
+  const globalProfile = globalProfiles.find(
     (globalProfile) => globalProfile.name === profileName
   );
-  const globalProfileExecutors = globalProfile[0]?.executors || [];
+  const globalProfileExecutors = globalProfile?.executors || [];
 
   useEffect(() => {
-    setValue(
-      "name",
-      globalProfile.length > 0 ? globalProfile[0]?.name : profile[0]?.name
-    );
-    setValue(
-      "description",
-      globalProfile.length > 0
-        ? globalProfile[0]?.description
-        : profile[0]?.description
-    );
+    setValue("name", globalProfile?.name ?? profile?.name);
+    setValue("description", globalProfile?.description ?? profile?.description);
   }, [profiles]);
 
   return (
@@ -219,12 +202,12 @@ export const ClientProfileForm = () => {
         badges={[
           {
             id: "global-client-profile-badge",
-            text: globalProfile.length > 0 ? t("global") : "",
+            text: globalProfile ? t("global") : "",
           },
         ]}
         divider
         dropdownItems={
-          globalProfile.length === 0
+          !globalProfile
             ? [
                 <DropdownItem
                   key="delete"
@@ -257,7 +240,7 @@ export const ClientProfileForm = () => {
               id="name"
               aria-label={t("name")}
               data-testid="client-profile-name"
-              isReadOnly={globalProfile.length > 0}
+              isReadOnly={!!globalProfile}
             />
           </FormGroup>
           <FormGroup label={t("common:description")} fieldId="kc-description">
@@ -268,11 +251,11 @@ export const ClientProfileForm = () => {
               id="description"
               aria-label={t("description")}
               data-testid="client-profile-description"
-              isReadOnly={globalProfile.length > 0}
+              isReadOnly={!!globalProfile}
             />
           </FormGroup>
           <ActionGroup>
-            {globalProfile.length === 0 && (
+            {!globalProfile && (
               <Button
                 variant="primary"
                 onClick={() => handleSubmit(save)()}
@@ -282,7 +265,7 @@ export const ClientProfileForm = () => {
                 {t("common:save")}
               </Button>
             )}
-            {editMode && globalProfile.length === 0 && (
+            {editMode && !globalProfile && (
               <Button
                 id={"reloadProfile"}
                 variant="link"
@@ -293,7 +276,7 @@ export const ClientProfileForm = () => {
                 {t("realm-settings:reload")}
               </Button>
             )}
-            {!editMode && globalProfile.length === 0 && (
+            {!editMode && !globalProfile && (
               <Button
                 id={"cancelCreateProfile"}
                 component={(props) => (
@@ -321,7 +304,7 @@ export const ClientProfileForm = () => {
                     />
                   </Text>
                 </FlexItem>
-                {Object.keys(profile).length !== 0 && (
+                {profile && (
                   <FlexItem align={{ default: "alignRight" }}>
                     <Button
                       id="addExecutor"
@@ -349,20 +332,18 @@ export const ClientProfileForm = () => {
                   {profileExecutors.map((executor, idx) => (
                     <DataListItem
                       aria-labelledby={"executors-list-item"}
-                      key={`list-item-${idx}`}
+                      key={executor.executor}
                       id={executor.executor}
                     >
                       <DataListItemRow data-testid="executors-list-row">
                         <DataListItemCells
                           dataListCells={[
                             <DataListCell
-                              key={`name-${idx}`}
+                              key="executor"
                               data-testid="executor-type"
                             >
-                              {Object.keys(executor.configuration!).length !==
-                              0 ? (
+                              {Object.keys(executor).length !== 0 ? (
                                 <Link
-                                  key={executor.executor}
                                   data-testid="executor-type-link"
                                   to={""}
                                   className="kc-executor-link"
@@ -372,41 +353,40 @@ export const ClientProfileForm = () => {
                               ) : (
                                 executor.executor
                               )}
-                              {executorTypes?.map((type) => (
-                                <>
-                                  {""}
-                                  {type.id === executor.executor && (
-                                    <>
-                                      <HelpItem
-                                        key={`executorType-${type.id}`}
-                                        helpText={type.helpText}
-                                        forLabel={t("executorTypeTextHelpText")}
-                                        forID={t(`common:helpLabel`, {
-                                          label: t("executorTypeTextHelpText"),
-                                        })}
-                                      />
-                                      <Button
-                                        variant="link"
-                                        isInline
-                                        icon={
-                                          <TrashIcon
-                                            key={`executorType-trash-icon-${type.id}`}
-                                            className="kc-executor-trash-icon"
-                                            data-testid="deleteExecutor"
-                                            onClick={() => {
-                                              toggleDeleteDialog();
-                                              setExecutorToDelete({
-                                                idx: idx,
-                                                name: type.id,
-                                              });
-                                            }}
-                                          />
-                                        }
-                                      ></Button>
-                                    </>
-                                  )}
-                                </>
-                              ))}
+                              {executorTypes
+                                ?.filter(
+                                  (type) => type.id === executor.executor
+                                )
+                                .map((type) => (
+                                  <>
+                                    <HelpItem
+                                      key={type.id}
+                                      helpText={type.helpText}
+                                      forLabel={t("executorTypeTextHelpText")}
+                                      forID={t(`common:helpLabel`, {
+                                        label: t("executorTypeTextHelpText"),
+                                      })}
+                                    />
+                                    <Button
+                                      variant="link"
+                                      isInline
+                                      icon={
+                                        <TrashIcon
+                                          key={`executorType-trash-icon-${type.id}`}
+                                          className="kc-executor-trash-icon"
+                                          data-testid="deleteExecutor"
+                                        />
+                                      }
+                                      onClick={() => {
+                                        toggleDeleteDialog();
+                                        setExecutorToDelete({
+                                          idx: idx,
+                                          name: type.id,
+                                        });
+                                      }}
+                                    ></Button>
+                                  </>
+                                ))}
                             </DataListCell>,
                           ]}
                         />
@@ -418,23 +398,21 @@ export const ClientProfileForm = () => {
               {globalProfileExecutors.length > 0 && (
                 <>
                   <DataList aria-label={t("executors")} isCompact>
-                    {globalProfileExecutors.map((executor, idx) => (
+                    {globalProfileExecutors.map((executor) => (
                       <DataListItem
                         aria-labelledby={"global-executors-list-item"}
-                        key={`global-list-item-${idx}`}
+                        key={executor.executor}
                         id={executor.executor}
                       >
                         <DataListItemRow data-testid="global-executors-list-row">
                           <DataListItemCells
                             dataListCells={[
                               <DataListCell
-                                key={`global-name-${idx}`}
+                                key="executor"
                                 data-testid="global-executor-type"
                               >
-                                {Object.keys(executor.configuration!).length !==
-                                0 ? (
+                                {Object.keys(executor).length !== 0 ? (
                                   <Link
-                                    key={executor.executor}
                                     data-testid="global-executor-type-link"
                                     to={""}
                                     className="kc-global-executor-link"
@@ -444,21 +422,20 @@ export const ClientProfileForm = () => {
                                 ) : (
                                   executor.executor
                                 )}
-                                {executorTypes?.map((type) => (
-                                  <>
-                                    {""}
-                                    {type.id === executor.executor && (
-                                      <HelpItem
-                                        key={`global-executorType-${type.id}`}
-                                        helpText={type.helpText}
-                                        forLabel={t("executorTypeTextHelpText")}
-                                        forID={t(`common:helpLabel`, {
-                                          label: t("executorTypeTextHelpText"),
-                                        })}
-                                      />
-                                    )}
-                                  </>
-                                ))}
+                                {executorTypes
+                                  ?.filter(
+                                    (type) => type.id === executor.executor
+                                  )
+                                  .map((type) => (
+                                    <HelpItem
+                                      key={type.id}
+                                      helpText={type.helpText}
+                                      forLabel={t("executorTypeTextHelpText")}
+                                      forID={t(`common:helpLabel`, {
+                                        label: t("executorTypeTextHelpText"),
+                                      })}
+                                    />
+                                  ))}
                               </DataListCell>,
                             ]}
                           />
