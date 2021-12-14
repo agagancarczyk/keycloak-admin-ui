@@ -408,9 +408,8 @@ export const UserCredentials = ({ user }: UserCredentialsProps) => {
               label={t("common:temporaryPassword")}
               labelIcon={
                 <HelpItem
-                  helpText={t("common:temporaryPasswordHelpText")}
-                  forLabel={t("common:temporaryPassword")}
-                  forID="kc-temporaryPasswordSwitch"
+                  helpText="temporaryPasswordHelpText"
+                  fieldLabelId="temporaryPassword"
                 />
               }
               fieldId="kc-temporaryPassword"
@@ -525,11 +524,8 @@ export const UserCredentials = ({ user }: UserCredentialsProps) => {
             <Tr>
               <Th>
                 <HelpItem
-                  helpText={t("userCredentialsHelpText")}
-                  forLabel={t("userCredentialsHelpTextLabel")}
-                  forID={t(`common:helpLabel`, {
-                    label: t("userCredentialsHelpTextLabel"),
-                  })}
+                  helpText="users:userCredentialsHelpText"
+                  fieldLabelId="users:userCredentialsHelpTextLabel"
                 />
               </Th>
               <Th>{t("type")}</Th>
