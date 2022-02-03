@@ -483,5 +483,7 @@ export default {
       never: "Never expires",
     },
     mappers: "Mappers",
+    userProfile: "User profile",
+    deleteAttribute: "Delete attribute?",
   },
 };

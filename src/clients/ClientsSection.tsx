@@ -32,6 +32,7 @@ import { toClient } from "./routes/Client";
 import { toImportClient } from "./routes/ImportClient";
 import { isRealmClient, getProtocolName } from "./utils";
 import helpUrls from "../help-urls";
+import { AttributesTab } from "./user-profile/AttributesTab";
 
 export default function ClientsSection() {
   const { t } = useTranslation("clients");
@@ -210,6 +211,13 @@ export default function ClientsSection() {
             title={<TabTitleText>{t("initialAccessToken")}</TabTitleText>}
           >
             <InitialAccessTokenList />
+          </Tab>
+          <Tab
+            data-testid="userProfile"
+            eventKey="userProfile"
+            title={<TabTitleText>{t("userProfile")}</TabTitleText>}
+          >
+            <AttributesTab />
           </Tab>
         </KeycloakTabs>
       </PageSection>
