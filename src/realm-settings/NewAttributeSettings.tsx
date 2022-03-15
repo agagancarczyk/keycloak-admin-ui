@@ -32,9 +32,10 @@ type UserProfileAttributeType = UserProfileAttribute &
 
 type AttributeRequired = {
   roles: string[];
+  scopes: string[];
   scopeRequired: string[];
-  enabledWhen: boolean;
-  requiredWhen: boolean;
+  enabledWhen: string;
+  requiredWhen: string;
 };
 
 type Permission = {
@@ -134,16 +135,18 @@ export default function NewAttributeSettings() {
     const scopeNames = clientScopes?.map((clientScope) => clientScope.name);
 
     const selector = {
-      scopes: profileConfig.enabledWhen
-        ? scopeNames
-        : profileConfig.selector?.scopes,
+      scopes:
+        profileConfig.enabledWhen === "Always"
+          ? scopeNames
+          : profileConfig.scopes,
     };
 
     const required = {
       roles: profileConfig.roles,
-      scopes: profileConfig.requiredWhen
-        ? scopeNames
-        : profileConfig.scopeRequired,
+      scopes:
+        profileConfig.requiredWhen === "Always"
+          ? scopeNames
+          : profileConfig.scopeRequired,
     };
 
     const validations = profileConfig.validations;
