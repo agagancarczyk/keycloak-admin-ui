@@ -35,12 +35,11 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                 <Checkbox
                   id="user-edit"
                   label={t("user")}
-                  value="user"
                   data-testid="userEdit"
                   ref={form.register}
                   isChecked={value}
                   onChange={(value) => {
-                    onChange(value);
+                    onChange(value ? "user" : "");
                   }}
                 />
               )}
@@ -59,7 +58,7 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   ref={form.register}
                   isChecked={value}
                   onChange={(value) => {
-                    onChange(value);
+                    onChange(value ? "admin" : "");
                   }}
                 />
               )}
@@ -92,7 +91,7 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   ref={form.register}
                   isChecked={value}
                   onChange={(value) => {
-                    onChange(value);
+                    onChange(value ? "user" : "");
                   }}
                 />
               )}
@@ -111,7 +110,7 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   ref={form.register}
                   isChecked={value}
                   onChange={(value) => {
-                    onChange(value);
+                    onChange(value ? "admin" : "");
                   }}
                 />
               )}
