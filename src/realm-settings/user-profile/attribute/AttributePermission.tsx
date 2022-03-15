@@ -31,6 +31,7 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
             <Controller
               name="userEdit"
               control={form.control}
+              defaultValue={"user"}
               render={({ onChange, value }) => (
                 <Checkbox
                   id="user-edit"
@@ -49,6 +50,7 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
             <Controller
               name="adminEdit"
               control={form.control}
+              defaultValue={"admin"}
               render={({ onChange, value }) => (
                 <Checkbox
                   id="admin-edit"
