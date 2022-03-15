@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Checkbox, FormGroup, Grid, GridItem } from "@patternfly/react-core";
 import { useTranslation } from "react-i18next";
 import { HelpItem } from "../../../components/help-enabler/HelpItem";
@@ -12,6 +12,10 @@ export type AttributePermissionProps = {
 
 export const AttributePermission = ({ form }: AttributePermissionProps) => {
   const { t } = useTranslation("realm-settings");
+  const [isUserEditChecked, setIsUserEditChecked] = useState(true);
+  const [isAdminEditChecked, setIsAdminEditChecked] = useState(true);
+  const [isUserViewChecked, setIsUserViewChecked] = useState(false);
+  const [isAdminViewChecked, setIsAdminViewChecked] = useState(false);
 
   return (
     <FormAccess role="manage-realm" isHorizontal>
@@ -36,17 +40,12 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                 <Checkbox
                   id="user-edit"
                   label={t("user")}
-                  value="user"
                   data-testid="userEdit"
                   ref={form.register}
-                  isChecked={value.includes("user")}
-                  onChange={() => {
-                    const option = "user";
-                    const changedValue = value.includes(option)
-                      ? value.filter((item: string) => item !== option)
-                      : [...value, option];
-
-                    onChange(changedValue);
+                  isChecked={value}
+                  onChange={(value) => {
+                    onChange(value ? "user" : "");
+                    setIsUserEditChecked(value);
                   }}
                 />
               )}
@@ -64,14 +63,10 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   value="admin"
                   data-testid="adminEdit"
                   ref={form.register}
-                  isChecked={value.includes("admin")}
-                  onChange={() => {
-                    const option = "admin";
-                    const changedValue = value.includes(option)
-                      ? value.filter((item: string) => item !== option)
-                      : [...value, option];
-
-                    onChange(changedValue);
+                  isChecked={value}
+                  onChange={(value) => {
+                    onChange(value ? "admin" : "");
+                    setIsAdminEditChecked(value);
                   }}
                 />
               )}
@@ -95,23 +90,19 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
             <Controller
               name="userView"
               control={form.control}
-              defaultValue={""}
-              render={({ onChange, value }) => (
+              render={({ onChange }) => (
                 <Checkbox
                   id="user-view"
                   label={t("user")}
                   value="user"
                   data-testid="userView"
                   ref={form.register}
-                  isChecked={value.includes("user")}
-                  onChange={() => {
-                    const option = "user";
-                    const changedValue = value.includes(option)
-                      ? value.filter((item: string) => item !== option)
-                      : [...value, option];
-
-                    onChange(changedValue);
+                  onChange={(value) => {
+                    onChange(value ? "user" : "");
+                    setIsUserViewChecked(value);
                   }}
+                  isChecked={isUserEditChecked ? true : isUserViewChecked}
+                  isDisabled={isUserEditChecked}
                 />
               )}
             />
@@ -120,23 +111,19 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
             <Controller
               name="adminView"
               control={form.control}
-              defaultValue={""}
-              render={({ onChange, value }) => (
+              render={({ onChange }) => (
                 <Checkbox
                   id="admin-view"
                   label={t("admin")}
                   value="admin"
                   data-testid="adminView"
                   ref={form.register}
-                  isChecked={value.includes("admin")}
-                  onChange={() => {
-                    const option = "admin";
-                    const changedValue = value.includes(option)
-                      ? value.filter((item: string) => item !== option)
-                      : [...value, option];
-
-                    onChange(changedValue);
+                  onChange={(value) => {
+                    onChange(value ? "admin" : "");
+                    setIsAdminViewChecked(value);
                   }}
+                  isChecked={isAdminEditChecked ? true : isAdminViewChecked}
+                  isDisabled={isAdminEditChecked}
                 />
               )}
             />

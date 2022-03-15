@@ -141,10 +141,10 @@ export default function NewAttributeSettings() {
 
     const permissions = {
       view: [profileConfig.userView, profileConfig.adminView].filter(
-        (val) => val !== ""
+        (permissionVal) => permissionVal
       ),
       edit: [profileConfig.userEdit, profileConfig.adminEdit].filter(
-        (val) => val !== ""
+        (permissionVal) => permissionVal
       ),
     };
 
