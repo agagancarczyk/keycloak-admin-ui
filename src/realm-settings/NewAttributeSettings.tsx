@@ -39,11 +39,23 @@ type AttributeRequired = {
 };
 
 type Permission = {
-  adminView?: string;
-  userView?: string;
-  adminEdit?: string;
-  userEdit?: string;
+  view: PermissionView[];
+  edit: PermissionEdit[];
 };
+
+type PermissionView = [
+  {
+    adminView: string;
+    userView: string;
+  }
+];
+
+type PermissionEdit = [
+  {
+    adminEdit: string;
+    userEdit: string;
+  }
+];
 
 const CreateAttributeFormContent = ({
   save,
@@ -140,12 +152,8 @@ export default function NewAttributeSettings() {
     const validations = profileConfig.validations;
 
     const permissions = {
-      view: [profileConfig.userView, profileConfig.adminView].filter(
-        (permissionVal) => permissionVal !== undefined
-      ),
-      edit: [profileConfig.userEdit, profileConfig.adminEdit].filter(
-        (permissionVal) => permissionVal !== undefined
-      ),
+      view: profileConfig.view,
+      edit: profileConfig.edit,
     };
 
     const annotations = (profileConfig.annotations! as KeyValueType[]).reduce(

@@ -29,18 +29,24 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
         <Grid>
           <GridItem lg={4} sm={6}>
             <Controller
-              name="userEdit"
+              name="edit"
               control={form.control}
-              defaultValue={"user"}
+              defaultValue={["user"]}
               render={({ onChange, value }) => (
                 <Checkbox
                   id="user-edit"
                   label={t("user")}
+                  value="user"
                   data-testid="userEdit"
                   ref={form.register}
-                  isChecked={value}
-                  onChange={(value) => {
-                    onChange(value ? "user" : "");
+                  isChecked={value.includes("user")}
+                  onChange={() => {
+                    const option = "user";
+                    const changedValue = value.includes(option)
+                      ? value.filter((item: string) => item !== option)
+                      : [...value, option];
+
+                    onChange(changedValue);
                   }}
                 />
               )}
@@ -48,9 +54,9 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
           </GridItem>
           <GridItem lg={8} sm={6}>
             <Controller
-              name="adminEdit"
+              name="edit"
               control={form.control}
-              defaultValue={"admin"}
+              defaultValue={["admin"]}
               render={({ onChange, value }) => (
                 <Checkbox
                   id="admin-edit"
@@ -58,9 +64,14 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   value="admin"
                   data-testid="adminEdit"
                   ref={form.register}
-                  isChecked={value}
-                  onChange={(value) => {
-                    onChange(value ? "admin" : "");
+                  isChecked={value.includes("admin")}
+                  onChange={() => {
+                    const option = "admin";
+                    const changedValue = value.includes(option)
+                      ? value.filter((item: string) => item !== option)
+                      : [...value, option];
+
+                    onChange(changedValue);
                   }}
                 />
               )}
@@ -82,8 +93,9 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
         <Grid>
           <GridItem lg={4} sm={6}>
             <Controller
-              name="userView"
+              name="view"
               control={form.control}
+              defaultValue={[]}
               render={({ onChange, value }) => (
                 <Checkbox
                   id="user-view"
@@ -91,9 +103,14 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   value="user"
                   data-testid="userView"
                   ref={form.register}
-                  isChecked={value}
-                  onChange={(value) => {
-                    onChange(value ? "user" : "");
+                  isChecked={value.includes("user")}
+                  onChange={() => {
+                    const option = "user";
+                    const changedValue = value.includes(option)
+                      ? value.filter((item: string) => item !== option)
+                      : [...value, option];
+
+                    onChange(changedValue);
                   }}
                 />
               )}
@@ -101,8 +118,9 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
           </GridItem>
           <GridItem lg={8} sm={6}>
             <Controller
-              name="adminView"
+              name="view"
               control={form.control}
+              defaultValue={[]}
               render={({ onChange, value }) => (
                 <Checkbox
                   id="admin-view"
@@ -110,9 +128,14 @@ export const AttributePermission = ({ form }: AttributePermissionProps) => {
                   value="admin"
                   data-testid="adminView"
                   ref={form.register}
-                  isChecked={value}
-                  onChange={(value) => {
-                    onChange(value ? "admin" : "");
+                  isChecked={value.includes("admin")}
+                  onChange={() => {
+                    const option = "admin";
+                    const changedValue = value.includes(option)
+                      ? value.filter((item: string) => item !== option)
+                      : [...value, option];
+
+                    onChange(changedValue);
                   }}
                 />
               )}
