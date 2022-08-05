@@ -164,5 +164,7 @@
   "credentialResetConfirmText": "Are you sure you want to send email to user",
   "credentialResetEmailSuccess": "Email sent to user.",
   "credentialResetEmailError": "Failed: {{error}}",
-  "editUserLabel": "Edit User Label Button"
+  "editUserLabel": "Edit User Label Button",
+  "disableConfirmTitle": "Disable user?",
+  "disableConfirm": "If you disable this user, you cannot initiate a login or obtain access tokens."
 }

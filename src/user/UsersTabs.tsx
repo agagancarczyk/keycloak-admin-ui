@@ -32,7 +32,13 @@ import { UserSessions } from "./UserSessions";
 import { useAccess } from "../context/access/Access";
 import { KeycloakSpinner } from "../components/keycloak-spinner/KeycloakSpinner";
 
-const UsersTabs = () => {
+type UserDetailHeaderProps = {
+  onChange: (value: boolean) => void;
+  value: boolean;
+  saveDisable: () => void;
+};
+
+const UsersTabs = ({ onChange, value, saveDisable }: UserDetailHeaderProps) => {
   const { t } = useTranslation("users");
   const { addAlert, addError } = useAlerts();
   const history = useHistory();
@@ -144,6 +150,16 @@ const UsersTabs = () => {
     },
   });
 
+  const [toggleDisableDialog, DisableConfirm] = useConfirmDialog({
+    titleKey: "users:disableConfirmTitle",
+    messageKey: "users:disableConfirm",
+    continueButtonLabel: "common:disable",
+    onConfirm: () => {
+      onChange(!value);
+      saveDisable();
+    },
+  });
+
   if (id && !user) {
     return <KeycloakSpinner />;
   }
@@ -155,6 +171,16 @@ const UsersTabs = () => {
       <ViewHeader
         titleKey={user?.id ? user.username! : t("createUser")}
         divider={!id}
+        helpTextKey="users-help:disabled"
+        isEnabled={value}
+        onToggle={(value) => {
+          if (!value) {
+            toggleDisableDialog();
+          } else {
+            onChange(value);
+            saveDisable();
+          }
+        }}
         dropdownItems={[
           <DropdownItem
             key="impersonate"
