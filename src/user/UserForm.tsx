@@ -186,6 +186,55 @@ export const UserForm = ({
           </FormGroup>
         </>
       )}
+      <FormGroup
+        label={t("requiredUserActions")}
+        fieldId="kc-required-user-actions"
+        validated={errors.requiredActions ? "error" : "default"}
+        helperTextInvalid={t("common:required")}
+        labelIcon={
+          <HelpItem
+            helpText="users-help:requiredUserActions"
+            fieldLabelId="users:requiredUserActions"
+          />
+        }
+      >
+        <Controller
+          name="requiredActions"
+          defaultValue={[]}
+          typeAheadAriaLabel="Select an action"
+          control={control}
+          render={({ onChange, value }) => (
+            <Select
+              data-testid="required-actions-select"
+              placeholderText="Select action"
+              toggleId="kc-required-user-actions"
+              onToggle={() =>
+                setRequiredUserActionsDropdownOpen(
+                  !isRequiredUserActionsDropdownOpen
+                )
+              }
+              isOpen={isRequiredUserActionsDropdownOpen}
+              selections={value}
+              onSelect={(_, v) => {
+                const option = v as string;
+                if (value.includes(option)) {
+                  onChange(value.filter((item: string) => item !== option));
+                } else {
+                  onChange([...value, option]);
+                }
+              }}
+              onClear={clearSelection}
+              variant="typeaheadmulti"
+            >
+              {requiredActions.map(({ alias, name }) => (
+                <SelectOption key={alias} value={alias}>
+                  {name}
+                </SelectOption>
+              ))}
+            </Select>
+          )}
+        />
+      </FormGroup>
       {!realm?.registrationEmailAsUsername && (
         <FormGroup
           label={t("username")}
@@ -323,55 +372,6 @@ export const UserForm = ({
               label={t("common:on")}
               labelOff={t("common:off")}
             />
-          )}
-        />
-      </FormGroup>
-      <FormGroup
-        label={t("requiredUserActions")}
-        fieldId="kc-required-user-actions"
-        validated={errors.requiredActions ? "error" : "default"}
-        helperTextInvalid={t("common:required")}
-        labelIcon={
-          <HelpItem
-            helpText="users-help:requiredUserActions"
-            fieldLabelId="users:requiredUserActions"
-          />
-        }
-      >
-        <Controller
-          name="requiredActions"
-          defaultValue={[]}
-          typeAheadAriaLabel="Select an action"
-          control={control}
-          render={({ onChange, value }) => (
-            <Select
-              data-testid="required-actions-select"
-              placeholderText="Select action"
-              toggleId="kc-required-user-actions"
-              onToggle={() =>
-                setRequiredUserActionsDropdownOpen(
-                  !isRequiredUserActionsDropdownOpen
-                )
-              }
-              isOpen={isRequiredUserActionsDropdownOpen}
-              selections={value}
-              onSelect={(_, v) => {
-                const option = v as string;
-                if (value.includes(option)) {
-                  onChange(value.filter((item: string) => item !== option));
-                } else {
-                  onChange([...value, option]);
-                }
-              }}
-              onClear={clearSelection}
-              variant="typeaheadmulti"
-            >
-              {requiredActions.map(({ alias, name }) => (
-                <SelectOption key={alias} value={alias}>
-                  {name}
-                </SelectOption>
-              ))}
-            </Select>
           )}
         />
       </FormGroup>
