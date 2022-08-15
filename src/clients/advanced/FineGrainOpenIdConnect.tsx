@@ -13,9 +13,9 @@ import {
 import { FormAccess } from "../../components/form-access/FormAccess";
 import { HelpItem } from "../../components/help-enabler/HelpItem";
 import { useServerInfo } from "../../context/server-info/ServerInfoProvider";
-import { sortProviders } from "../../util";
+import { convertAttributeNameToForm, sortProviders } from "../../util";
 import { MultiLineInput } from "../../components/multi-line-input/MultiLineInput";
-import { KeycloakTextInput } from "../../components/keycloak-text-input/KeycloakTextInput";
+import { ApplicationUrls } from "./ApplicationUrls";
 
 type FineGrainOpenIdConnectProps = {
   save: () => void;
@@ -57,7 +57,7 @@ export const FineGrainOpenIdConnect = ({
     setAuthorizationEncryptedResponseOpen,
   ] = useState(false);
 
-  const { control, register } = useFormContext();
+  const { control } = useFormContext();
 
   const keyOptions = [
     <SelectOption key="empty" value="">
@@ -148,60 +148,7 @@ export const FineGrainOpenIdConnect = ({
       fineGrainedAccess={hasConfigureAccess}
       isHorizontal
     >
-      <FormGroup
-        label={t("logoUrl")}
-        fieldId="logoUrl"
-        labelIcon={
-          <HelpItem
-            helpText="clients-help:logoUrl"
-            fieldLabelId="clients:logoUrl"
-          />
-        }
-      >
-        <KeycloakTextInput
-          type="text"
-          id="logoUrl"
-          name="attributes.logoUri"
-          data-testid="logoUrl"
-          ref={register}
-        />
-      </FormGroup>
-      <FormGroup
-        label={t("policyUrl")}
-        fieldId="policyUrl"
-        labelIcon={
-          <HelpItem
-            helpText="clients-help:policyUrl"
-            fieldLabelId="clients:policyUrl"
-          />
-        }
-      >
-        <KeycloakTextInput
-          type="text"
-          id="policyUrl"
-          name="attributes.policyUri"
-          data-testid="policyUrl"
-          ref={register}
-        />
-      </FormGroup>
-      <FormGroup
-        label={t("termsOfServiceUrl")}
-        fieldId="termsOfServiceUrl"
-        labelIcon={
-          <HelpItem
-            helpText="clients-help:termsOfServiceUrl"
-            fieldLabelId="clients:termsOfServiceUrl"
-          />
-        }
-      >
-        <KeycloakTextInput
-          type="text"
-          id="termsOfServiceUrl"
-          name="attributes.tosUri"
-          data-testid="termsOfServiceUrl"
-          ref={register}
-        />
-      </FormGroup>
+      <ApplicationUrls />
       <FormGroup
         label={t("accessTokenSignatureAlgorithm")}
         fieldId="accessTokenSignatureAlgorithm"
@@ -213,7 +160,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.access.token.signed.response.alg"
+          name={convertAttributeNameToForm(
+            "attributes.access.token.signed.response.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -244,7 +193,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.id.token.signed.response.alg"
+          name={convertAttributeNameToForm(
+            "attributes.id.token.signed.response.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -275,7 +226,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.id.token.encrypted.response.alg"
+          name={convertAttributeNameToForm(
+            "attributes.id.token.encrypted.response.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -306,7 +259,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.id.token.encrypted.response.enc"
+          name={convertAttributeNameToForm(
+            "attributes.id.token.encrypted.response.enc"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -337,7 +292,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.user.info.response.signature.alg"
+          name={convertAttributeNameToForm(
+            "attributes.user.info.response.signature.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -368,7 +325,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.request.object.signature.alg"
+          name={convertAttributeNameToForm(
+            "attributes.request.object.signature.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -399,7 +358,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.request.object.encryption.alg"
+          name={convertAttributeNameToForm(
+            "attributes.request.object.encryption.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -430,7 +391,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.request.object.encryption.enc"
+          name={convertAttributeNameToForm(
+            "attributes.request.object.encryption.enc"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -461,7 +424,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.request.object.required"
+          name={convertAttributeNameToForm(
+            "attributes.request.object.required"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -492,7 +457,7 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <MultiLineInput
-          name="attributes.request.uris"
+          name={convertAttributeNameToForm("attributes.request.uris")}
           aria-label={t("validRequestURIs")}
           addButtonLabel="clients:addRequestUri"
         />
@@ -508,7 +473,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.authorization.signed.response.alg"
+          name={convertAttributeNameToForm(
+            "attributes.authorization.signed.response.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -539,7 +506,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.authorization.encrypted.response.alg"
+          name={convertAttributeNameToForm(
+            "attributes.authorization.encrypted.response.alg"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
@@ -570,7 +539,9 @@ export const FineGrainOpenIdConnect = ({
         }
       >
         <Controller
-          name="attributes.authorization.encrypted.response.enc"
+          name={convertAttributeNameToForm(
+            "attributes.authorization.encrypted.response.enc"
+          )}
           defaultValue=""
           control={control}
           render={({ onChange, value }) => (
