@@ -168,6 +168,7 @@ const UsersTabs = ({ onChange, value, saveDisable }: UserDetailHeaderProps) => {
     <>
       <ImpersonateConfirm />
       <DeleteConfirm />
+      <DisableConfirm />
       <ViewHeader
         titleKey={user?.id ? user.username! : t("createUser")}
         divider={!id}

@@ -352,7 +352,7 @@ export const UserForm = ({
           />
         </FormGroup>
       )}
-      <FormGroup
+      {/* <FormGroup
         label={t("common:enabled")}
         fieldId="kc-enabled"
         labelIcon={
@@ -374,7 +374,7 @@ export const UserForm = ({
             />
           )}
         />
-      </FormGroup>
+      </FormGroup> */}
       {!user?.id && (
         <FormGroup
           label={t("common:groups")}
