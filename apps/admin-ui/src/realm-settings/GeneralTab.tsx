@@ -145,7 +145,7 @@ export const RealmSettingsGeneralTab = ({
                 }}
                 selections={value}
                 variant={SelectVariant.single}
-                aria-label={t("requireSsl")}
+                aria-labelledby={`selected-${value}`}
                 isOpen={open}
               >
                 {requireSslTypes.map((sslType) => (
