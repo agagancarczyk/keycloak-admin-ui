@@ -3,7 +3,10 @@ import type { Path } from "react-router-dom-v5-compat";
 import { generatePath } from "react-router-dom-v5-compat";
 import type { RouteDef } from "../../route-config";
 
-export type ClientsTab = "list" | "initial-access-token";
+export type ClientsTab =
+  | "list"
+  | "initial-access-token"
+  | "client-registration";
 
 export type ClientsParams = {
   realm: string;

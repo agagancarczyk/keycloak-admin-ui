@@ -185,6 +185,8 @@
   "updateScopeSuccess": "Authorization scope successfully updated",
   "scopeSaveError": "Could not persist authorization scope due to {{error}}",
   "createPolicy": "Create policy",
+  "clientPolicySearch": "Search",
+  "clientPolicies": "Client Policies",
   "createPolicyOfType": "Create {{policyType}} policy",
   "dependentPermission": "Dependent permission",
   "deletePolicy": "Permanently delete policy?",
@@ -511,5 +513,16 @@
     "never": "Never expires"
   },
   "mappers": "Mappers",
-  "sessions": "Sessions"
+  "sessions": "Sessions",
+  "clientRegistration": "Client registration",
+  "anonymousAccessPolicies": "Anonymous Access Policies",
+  "authenticatedAccessPolicies": "Authenticated Access Policies",
+  "noClientPolicies": "No Client Policies",
+  "noClientPoliciesInstructions": "There are no Anonymous Access Policies. Select 'Create policy' to create a new client policy.",
+  "deleteClientPolicyConfirmTitle": "Delete policy?",
+  "deleteClientPolicyConfirm": "The action will permanently delete Trusted Hosts. This cannot be undone.",
+  "deleteClientPolicySuccess": "Client policy deleted",
+  "deleteClientPolicyError": "Could not delete policy: {{error}}",
+  "createClientProfileSuccess": "Client profile created successfully",
+  "createClientProfileError": "Could not create client profile: '{{error}}'"
 }

@@ -39,6 +39,7 @@ import {
   RoutableTabs,
 } from "../components/routable-tabs/RoutableTabs";
 import { ClientsTab, toClients } from "./routes/Clients";
+import { ClientRegistrationTab } from "./client-registration/ClientRegistrationTab";
 
 export default function ClientsSection() {
   const { t } = useTranslation("clients");
@@ -230,6 +231,13 @@ export default function ClientsSection() {
             {...route("initial-access-token")}
           >
             <InitialAccessTokenList />
+          </Tab>
+          <Tab
+            title={<TabTitleText>{t("clientRegistration")}</TabTitleText>}
+            data-testid="rs-clientRegistration-tab"
+            {...route("client-registration")}
+          >
+            <ClientRegistrationTab />
           </Tab>
         </RoutableTabs>
       </PageSection>

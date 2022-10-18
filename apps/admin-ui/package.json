@@ -51,6 +51,7 @@
     "@patternfly/react-core": "^4.239.0",
     "@patternfly/react-icons": "^4.90.0",
     "@patternfly/react-table": "^4.108.0",
+    "admin-ui": "file:apps/admin-ui",
     "dagre": "^0.8.5",
     "file-saver": "^2.0.5",
     "flat": "^5.0.2",
@@ -69,7 +70,8 @@
     "react-router-dom": "^5.3.4",
     "react-router-dom-v5-compat": "^6.4.2",
     "react-use-localstorage": "^3.5.3",
-    "use-react-router-breadcrumbs": "^2.0.2"
+    "use-react-router-breadcrumbs": "^2.0.2",
+    "wireit": "^0.7.2"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.1",
