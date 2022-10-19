@@ -14,7 +14,6 @@ import { useAdminClient, useFetch } from "../../context/auth/AdminClient";
 import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinner";
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "../../components/alert/Alerts";
-import ClientPolicyRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientPolicyRepresentation";
 import useToggle from "../../utils/useToggle";
 import { NewClientRegistrationPolicyDialog } from "./NewClientRegistrationPolicyDialog";
 import { toCreateClientRegistrationPolicyProvider } from "../routes/NewClientRegistrationPolicyProvider";
@@ -59,8 +58,13 @@ export const AnonymousAccessPoliciesTab = () => {
 
   const ClientRegistrationPolicyDetailLink = ({
     name,
-  }: ClientPolicyRepresentation) => (
-    <Link to={toEditClientRegistrationPolicy({ realm, policyName: name! })}>
+  }: ComponentRepresentation) => (
+    <Link
+      to={toEditClientRegistrationPolicy({
+        realm,
+        policyName: name!,
+      })}
+    >
       {name}
     </Link>
   );
