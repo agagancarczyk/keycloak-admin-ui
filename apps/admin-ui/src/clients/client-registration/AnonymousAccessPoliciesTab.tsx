@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { useTranslation } from "react-i18next";
@@ -17,13 +16,12 @@ import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "../../components/alert/Alerts";
 import ClientPolicyRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientPolicyRepresentation";
 import useToggle from "../../utils/useToggle";
-import { NewPolicyDialog } from "./NewPolicyDialog";
-import { toCreatePolicyProvider } from "../routes/NewPolicyProvider";
-import PolicyProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/policyProviderRepresentation";
-import { useServerInfo } from "../../context/server-info/ServerInfoProvider";
+import { NewClientRegistrationPolicyDialog } from "./NewClientRegistrationPolicyDialog";
+import { toCreateClientRegistrationPolicyProvider } from "../routes/NewClientRegistrationPolicyProvider";
 import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import useLocaleSort, { mapByKey } from "../../utils/useLocaleSort";
 import { toEditClientRegistrationPolicy } from "../routes/EditClientRegistrationPolicy";
+import ComponentTypeRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentTypeRepresentation";
 
 export const AnonymousAccessPoliciesTab = () => {
   const { t } = useTranslation("clients");
@@ -38,24 +36,22 @@ export const AnonymousAccessPoliciesTab = () => {
   const [newDialog, toggleDialog] = useToggle();
   const navigate = useNavigate();
   const [policyProviders, setPolicyProviders] =
-    useState<PolicyProviderRepresentation[]>();
+    useState<ComponentTypeRepresentation[]>();
   const localeSort = useLocaleSort();
-  const serverInfo = useServerInfo();
-  const clientPolicyProviders =
-    serverInfo.providers!["client-registration-policy"].providers;
 
   useFetch(
-    async () => {
-      const policies =
-        await adminClient.components.listClientRegistrationPolicies({
+    () =>
+      Promise.all([
+        adminClient.components.listClientRegistrationPolicies({
           type: "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy",
-        });
-      return { policies };
+        }),
+        adminClient.clientRegistrationPolicies.find(),
+      ]),
+    ([policies, providers]) => {
+      setPolicies(localeSort(policies, mapByKey("name")));
+      setPolicyProviders(localeSort(providers, mapByKey("id")));
     },
-    (policies) => {
-      setPolicies(localeSort(policies.policies, mapByKey("name")));
-    },
-    [key]
+    []
   );
 
   const loader = async () =>
@@ -66,10 +62,6 @@ export const AnonymousAccessPoliciesTab = () => {
       {name}
     </Link>
   );
-
-  const save = () => {
-    console.log("TODO save create policy");
-  };
 
   const [toggleDeleteDialog, DeleteConfirm] = useConfirmDialog({
     titleKey: t("deleteClientPolicyConfirmTitle"),
@@ -103,15 +95,13 @@ export const AnonymousAccessPoliciesTab = () => {
     <>
       <DeleteConfirm />
       {newDialog && (
-        <NewPolicyDialog
+        <NewClientRegistrationPolicyDialog
           policyProviders={policyProviders}
           onSelect={(p) =>
             navigate(
-              // toCreatePolicy({ id: clientId, realm, policyType: p.type! })
-              toCreatePolicyProvider({
-                id: "0",
+              toCreateClientRegistrationPolicyProvider({
                 realm,
-                policyProviderType: p.type!,
+                policyProviderId: p.id!,
               })
             )
           }

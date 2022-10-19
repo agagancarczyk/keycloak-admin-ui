@@ -14,21 +14,19 @@ import {
   Thead,
   Tr,
 } from "@patternfly/react-table";
+import ComponentTypeRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentTypeRepresentation";
 
-import type PolicyProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/policyProviderRepresentation";
-// import { isValidComponentType } from "./PolicyDetails";
-
-type NewPolicyDialogProps = {
-  policyProviders?: PolicyProviderRepresentation[];
+type NewClientRegistrationPolicyDialogProps = {
+  policyProviders?: ComponentTypeRepresentation[];
   toggleDialog: () => void;
-  onSelect: (provider: PolicyProviderRepresentation) => void;
+  onSelect: (provider: ComponentTypeRepresentation) => void;
 };
 
-export const NewPolicyDialog = ({
+export const NewClientRegistrationPolicyDialog = ({
   policyProviders,
   onSelect,
   toggleDialog,
-}: NewPolicyDialogProps) => {
+}: NewClientRegistrationPolicyDialogProps) => {
   const { t } = useTranslation("clients");
 
   return (
@@ -44,7 +42,7 @@ export const NewPolicyDialog = ({
       isOpen
       onClose={toggleDialog}
     >
-      <TableComposable aria-label={t("policies")} variant="compact">
+      <TableComposable aria-label={t("providers")} variant="compact">
         <Thead>
           <Tr>
             <Th>{t("common:provider")}</Th>
@@ -54,16 +52,13 @@ export const NewPolicyDialog = ({
         <Tbody>
           {policyProviders?.map((provider) => (
             <Tr
-              key={provider.type}
-              data-testid={provider.type}
+              key={provider.id}
+              data-testid={provider.id}
               onRowClick={() => onSelect(provider)}
               isHoverable
             >
-              <Td>{provider.name}</Td>
-              {/* <Td>
-                {isValidComponentType(provider.type!) &&
-                  t(`policyProvider.${provider.type}`)}
-              </Td> */}
+              <Td>{provider.id}</Td>
+              <Td>{provider.helpText}</Td>
             </Tr>
           ))}
         </Tbody>
