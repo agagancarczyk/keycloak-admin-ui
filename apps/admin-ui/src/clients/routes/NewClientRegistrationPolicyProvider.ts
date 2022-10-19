@@ -10,9 +10,7 @@ export type NewClientRegistrationPolicyProviderParams = {
 
 export const NewClientRegistrationPolicyProviderRoute: RouteDef = {
   path: "/:realm/clients/client-registration/new/:policyProviderId",
-  component: lazy(
-    () => import("../client-registration/ClientRegistrationPolicyDetails")
-  ),
+  component: lazy(() => import("../NewClientRegistrationPolicyForm")),
   breadcrumb: (t) => t("clients:createPolicy"),
   access: "view-clients",
 };
