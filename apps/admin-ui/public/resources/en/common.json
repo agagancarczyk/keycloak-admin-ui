@@ -208,5 +208,6 @@
   "temporaryPasswordHelpText": "If enabled, the user must change the password on next login",
   "forbidden_one": "Forbidden, permission needed:",
   "forbidden_other": "Forbidden, permissions needed:",
-  "provider": "Provider"
+  "provider": "Provider",
+  "noRealmRolesToAssign": "There are no realm roles to assign"
 }
