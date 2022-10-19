@@ -22,48 +22,52 @@ import { NewPolicyDialog } from "./NewPolicyDialog";
 import { toCreatePolicyProvider } from "../routes/NewPolicyProvider";
 import PolicyProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/policyProviderRepresentation";
 import { useServerInfo } from "../../context/server-info/ServerInfoProvider";
+import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
+import useLocaleSort, { mapByKey } from "../../utils/useLocaleSort";
 
 export const AnonymousAccessPoliciesTab = () => {
   const { t } = useTranslation("clients");
   const { adminClient } = useAdminClient();
   const { addAlert, addError } = useAlerts();
   const { realm } = useRealm();
-  const [policies, setPolicies] = useState<ClientPolicyRepresentation[]>();
+  const [policies, setPolicies] = useState<ComponentRepresentation[]>();
   const [selectedPolicy, setSelectedPolicy] =
-    useState<ClientPolicyRepresentation>();
+    useState<ComponentRepresentation>();
   const [key, setKey] = useState(0);
-  const [tablePolicies, setTablePolicies] =
-    useState<ClientPolicyRepresentation[]>();
   const refresh = () => setKey(key + 1);
   const [newDialog, toggleDialog] = useToggle();
   const navigate = useNavigate();
   const [policyProviders, setPolicyProviders] =
     useState<PolicyProviderRepresentation[]>();
+  const localeSort = useLocaleSort();
   const serverInfo = useServerInfo();
   const clientPolicyProviders =
     serverInfo.providers!["client-registration-policy"].providers;
 
-  console.log(clientPolicyProviders);
-
-  // const form = useForm<Record<string, boolean>>({ mode: "onChange" });
-
   useFetch(
-    () => adminClient.clientPolicies.listPolicies(),
+    async () => {
+      const policies =
+        await adminClient.components.listClientRegistrationPolicies({
+          type: "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy",
+        });
+      return { policies };
+    },
     (policies) => {
-      setPolicies(policies.policies), setTablePolicies(policies.policies || []);
+      setPolicies(localeSort(policies.policies, mapByKey("name")));
     },
     [key]
   );
 
-  const loader = async () => policies ?? [];
+  const loader = async () =>
+    policies?.filter((policy) => policy.subType !== "authenticated") ?? [];
 
   const ClientPolicyDetailLink = ({ name }: ClientPolicyRepresentation) => (
     <Link to={toEditClientPolicy({ realm, policyName: name! })}>{name}</Link>
   );
 
-  // const save = () => {
-  //   console.log("save");
-  // };
+  const save = () => {
+    console.log("TODO save create policy");
+  };
 
   const [toggleDeleteDialog, DeleteConfirm] = useConfirmDialog({
     titleKey: t("deleteClientPolicyConfirmTitle"),
@@ -92,9 +96,6 @@ export const AnonymousAccessPoliciesTab = () => {
   if (!policies) {
     return <KeycloakSpinner />;
   }
-
-  // const noData = policies.length === 0;
-  // const searching = Object.keys(search).length !== 0;
 
   return (
     <>
@@ -152,6 +153,7 @@ export const AnonymousAccessPoliciesTab = () => {
           },
           {
             name: "providerId",
+            displayKey: t("providerId"),
           },
         ]}
       />

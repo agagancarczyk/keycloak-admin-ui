@@ -526,5 +526,6 @@
   "createClientProfileSuccess": "Client profile created successfully",
   "createClientProfileError": "Could not create client profile: '{{error}}'",
   "chooseAPolicyProvider": "Choose a policy provider",
+  "providerId": "Provider ID",
   "chooseAPolicyProviderInstructions": "Choose one policy provider from the list below and then you can configure a new policy."
 }
