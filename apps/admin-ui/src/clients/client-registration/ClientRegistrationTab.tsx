@@ -1,12 +1,7 @@
-import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Tab, TabTitleText, Tooltip } from "@patternfly/react-core";
-
-import type ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
-import { useAdminClient, useFetch } from "../../context/auth/AdminClient";
 import { useRealm } from "../../context/realm-context/RealmContext";
-import { KEY_PROVIDER_TYPE } from "../../util";
 import {
   routableTab,
   RoutableTabs,
@@ -15,46 +10,13 @@ import {
   ClientRegistrationSubTab,
   toClientRegistrationTab,
 } from "../routes/ClientRegistrationTab";
-import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinner";
 import { AnonymousAccessPoliciesTab } from "./AnonymousAccessPoliciesTab";
 import { AuthenticatedAccessPoliciesTab } from "./AuthenticatedAccessPoliciesTab";
-
-const sortByPriority = (components: ComponentRepresentation[]) => {
-  const sortedComponents = [...components].sort((a, b) => {
-    const priorityA = Number(a.config?.priority);
-    const priorityB = Number(b.config?.priority);
-
-    return (
-      (!isNaN(priorityB) ? priorityB : 0) - (!isNaN(priorityA) ? priorityA : 0)
-    );
-  });
-
-  return sortedComponents;
-};
 
 export const ClientRegistrationTab = () => {
   const { t } = useTranslation("clients");
   const history = useHistory();
-
-  const { adminClient } = useAdminClient();
   const { realm: realmName } = useRealm();
-
-  const [realmComponents, setRealmComponents] =
-    useState<ComponentRepresentation[]>();
-
-  useFetch(
-    () =>
-      adminClient.components.find({
-        type: KEY_PROVIDER_TYPE,
-        realm: realmName,
-      }),
-    (components) => setRealmComponents(sortByPriority(components)),
-    []
-  );
-
-  if (!realmComponents) {
-    return <KeycloakSpinner />;
-  }
 
   const keysRoute = (tab: ClientRegistrationSubTab) =>
     routableTab({

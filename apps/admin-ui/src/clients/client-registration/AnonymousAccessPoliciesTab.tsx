@@ -57,7 +57,9 @@ export const AnonymousAccessPoliciesTab = () => {
   const loader = async () =>
     policies?.filter((policy) => policy.subType !== "authenticated") ?? [];
 
-  const ClientPolicyDetailLink = ({ name }: ClientPolicyRepresentation) => (
+  const ClientRegistrationPolicyDetailLink = ({
+    name,
+  }: ClientPolicyRepresentation) => (
     <Link to={toEditClientRegistrationPolicy({ realm, policyName: name! })}>
       {name}
     </Link>
@@ -141,7 +143,7 @@ export const AnonymousAccessPoliciesTab = () => {
         columns={[
           {
             name: "name",
-            cellRenderer: ClientPolicyDetailLink,
+            cellRenderer: ClientRegistrationPolicyDetailLink,
           },
           {
             name: "providerId",
