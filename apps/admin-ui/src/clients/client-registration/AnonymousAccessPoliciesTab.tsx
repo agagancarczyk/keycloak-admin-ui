@@ -57,11 +57,13 @@ export const AnonymousAccessPoliciesTab = () => {
     policies?.filter((policy) => policy.subType !== "authenticated") ?? [];
 
   const ClientRegistrationPolicyDetailLink = ({
+    id,
     name,
   }: ComponentRepresentation) => (
     <Link
       to={toEditClientRegistrationPolicy({
         realm,
+        policyId: id!,
         policyName: name!,
       })}
     >

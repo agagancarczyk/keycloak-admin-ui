@@ -5,11 +5,12 @@ import type { RouteDef } from "../../route-config";
 
 export type EditClientRegistrationPolicyParams = {
   realm: string;
+  policyId: string;
   policyName: string;
 };
 
 export const EditClientRegistrationPolicyRoute: RouteDef = {
-  path: "/:realm/clients/client-registration/:policyName/edit-client-registration-policy",
+  path: "/:realm/clients/client-registration/:policyId/edit-client-registration-policy",
   component: lazy(() => import("../NewClientRegistrationPolicyForm")),
   access: "manage-realm",
   breadcrumb: (t) => t("clients:policyDetails"),
