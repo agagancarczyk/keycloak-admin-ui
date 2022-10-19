@@ -16,7 +16,6 @@ import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinn
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "../../components/alert/Alerts";
 import ClientPolicyRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientPolicyRepresentation";
-import { toEditClientPolicy } from "../../realm-settings/routes/EditClientPolicy";
 import useToggle from "../../utils/useToggle";
 import { NewPolicyDialog } from "./NewPolicyDialog";
 import { toCreatePolicyProvider } from "../routes/NewPolicyProvider";
@@ -24,6 +23,7 @@ import PolicyProviderRepresentation from "@keycloak/keycloak-admin-client/lib/de
 import { useServerInfo } from "../../context/server-info/ServerInfoProvider";
 import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import useLocaleSort, { mapByKey } from "../../utils/useLocaleSort";
+import { toEditClientRegistrationPolicy } from "../routes/EditClientRegistrationPolicy";
 
 export const AnonymousAccessPoliciesTab = () => {
   const { t } = useTranslation("clients");
@@ -62,7 +62,9 @@ export const AnonymousAccessPoliciesTab = () => {
     policies?.filter((policy) => policy.subType !== "authenticated") ?? [];
 
   const ClientPolicyDetailLink = ({ name }: ClientPolicyRepresentation) => (
-    <Link to={toEditClientPolicy({ realm, policyName: name! })}>{name}</Link>
+    <Link to={toEditClientRegistrationPolicy({ realm, policyName: name! })}>
+      {name}
+    </Link>
   );
 
   const save = () => {
