@@ -524,5 +524,7 @@
   "deleteClientPolicySuccess": "Client policy deleted",
   "deleteClientPolicyError": "Could not delete policy: {{error}}",
   "createClientProfileSuccess": "Client profile created successfully",
-  "createClientProfileError": "Could not create client profile: '{{error}}'"
+  "createClientProfileError": "Could not create client profile: '{{error}}'",
+  "chooseAPolicyProvider": "Choose a policy provider",
+  "chooseAPolicyProviderInstructions": "Choose one policy provider from the list below and then you can configure a new policy."
 }

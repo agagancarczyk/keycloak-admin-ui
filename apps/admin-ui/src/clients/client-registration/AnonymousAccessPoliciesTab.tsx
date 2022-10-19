@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
-import { Link } from "react-router-dom-v5-compat";
+import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { useTranslation } from "react-i18next";
 import {
   AlertVariant,
@@ -16,9 +16,12 @@ import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinn
 import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "../../components/alert/Alerts";
 import ClientPolicyRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientPolicyRepresentation";
-import { useForm } from "react-hook-form";
 import { toEditClientPolicy } from "../../realm-settings/routes/EditClientPolicy";
 import useToggle from "../../utils/useToggle";
+import { NewPolicyDialog } from "./NewPolicyDialog";
+import { toCreatePolicyProvider } from "../routes/NewPolicyProvider";
+import PolicyProviderRepresentation from "@keycloak/keycloak-admin-client/lib/defs/policyProviderRepresentation";
+import { useServerInfo } from "../../context/server-info/ServerInfoProvider";
 
 export const AnonymousAccessPoliciesTab = () => {
   const { t } = useTranslation("clients");
@@ -33,6 +36,14 @@ export const AnonymousAccessPoliciesTab = () => {
     useState<ClientPolicyRepresentation[]>();
   const refresh = () => setKey(key + 1);
   const [newDialog, toggleDialog] = useToggle();
+  const navigate = useNavigate();
+  const [policyProviders, setPolicyProviders] =
+    useState<PolicyProviderRepresentation[]>();
+  const serverInfo = useServerInfo();
+  const clientPolicyProviders =
+    serverInfo.providers!["client-registration-policy"].providers;
+
+  console.log(clientPolicyProviders);
 
   // const form = useForm<Record<string, boolean>>({ mode: "onChange" });
 
@@ -50,24 +61,8 @@ export const AnonymousAccessPoliciesTab = () => {
     <Link to={toEditClientPolicy({ realm, policyName: name! })}>{name}</Link>
   );
 
-  // const save = async () => {
-  //   try {
-  //     // const obj: ClientPolicyRepresentation[] = JSON.parse(code);
-
-  //     try {
-  //       await adminClient.clientPolicies.updatePolicy({
-  //         // policies: obj,
-  //         policies: [],
-  //       });
-  //       addAlert(t("createClientProfileSuccess"), AlertVariant.success);
-  //       refresh();
-  //     } catch (error) {
-  //       addError("createClientProfileError", error);
-  //     }
-  //   } catch (error) {
-  //     console.warn("Invalid json, ignoring value using {}");
-  //     addError("createClientProfileError", error);
-  //   }
+  // const save = () => {
+  //   console.log("save");
   // };
 
   const [toggleDeleteDialog, DeleteConfirm] = useConfirmDialog({
@@ -97,9 +92,29 @@ export const AnonymousAccessPoliciesTab = () => {
   if (!policies) {
     return <KeycloakSpinner />;
   }
+
+  // const noData = policies.length === 0;
+  // const searching = Object.keys(search).length !== 0;
+
   return (
     <>
       <DeleteConfirm />
+      {newDialog && (
+        <NewPolicyDialog
+          policyProviders={policyProviders}
+          onSelect={(p) =>
+            navigate(
+              // toCreatePolicy({ id: clientId, realm, policyType: p.type! })
+              toCreatePolicyProvider({
+                id: "0",
+                realm,
+                policyProviderType: p.type!,
+              })
+            )
+          }
+          toggleDialog={toggleDialog}
+        />
+      )}
       <KeycloakDataTable
         key={policies.length}
         emptyState={
@@ -107,7 +122,7 @@ export const AnonymousAccessPoliciesTab = () => {
             message={t("noClientPolicies")}
             instructions={t("noClientPoliciesInstructions")}
             primaryActionText={t("createPolicy")}
-            onPrimaryAction={() => toggleDialog}
+            onPrimaryAction={toggleDialog}
           />
         }
         ariaLabelKey="clients:clientPolicies"
@@ -116,7 +131,7 @@ export const AnonymousAccessPoliciesTab = () => {
         loader={loader}
         toolbarItem={
           <ToolbarItem>
-            <Button data-testid="createPolicy" onClick={toggleDialog}>
+            <Button data-testid="createClientPolicy" onClick={toggleDialog}>
               {t("createPolicy")}
             </Button>
           </ToolbarItem>
