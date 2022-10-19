@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Tab, TabTitleText } from "@patternfly/react-core";
+import { Tab, TabTitleText, Tooltip } from "@patternfly/react-core";
 
 import type ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import { useAdminClient, useFetch } from "../../context/auth/AdminClient";
@@ -76,6 +76,7 @@ export const ClientRegistrationTab = () => {
         data-testid="rs-anonymous-access-policies-tab"
         aria-label="anonymous-access-policies-subtab"
         title={<TabTitleText>{t("anonymousAccessPolicies")}</TabTitleText>}
+        tooltip={<Tooltip content={t("anonymousAccessPoliciesHelpText")} />}
         {...keysRoute("anonymous")}
       >
         <AnonymousAccessPoliciesTab />
@@ -85,6 +86,7 @@ export const ClientRegistrationTab = () => {
         data-testid="rs-authenticated-access-policies-tab"
         aria-label="rs-authenticated-access-policies-tab"
         title={<TabTitleText>{t("authenticatedAccessPolicies")}</TabTitleText>}
+        tooltip={<Tooltip content={t("authenticatedAccessPoliciesHelpText")} />}
         {...keysRoute("authenticated")}
       >
         <AuthenticatedAccessPoliciesTab />
