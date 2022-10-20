@@ -50,7 +50,7 @@ export const AnonymousAccessPoliciesTab = () => {
       setPolicies(localeSort(policies, mapByKey("name")));
       setPolicyProviders(localeSort(providers, mapByKey("id")));
     },
-    []
+    [key]
   );
 
   const loader = async () =>
@@ -72,25 +72,26 @@ export const AnonymousAccessPoliciesTab = () => {
   );
 
   const [toggleDeleteDialog, DeleteConfirm] = useConfirmDialog({
-    titleKey: t("deleteClientPolicyConfirmTitle"),
-    messageKey: t("deleteClientPolicyConfirm", {
+    titleKey: t("deleteClientRegistrationPolicyConfirmTitle"),
+    messageKey: t("deleteClientRegistrationPolicyConfirm", {
       policyName: selectedPolicy?.name,
     }),
     continueButtonLabel: t("common:delete"),
     continueButtonVariant: ButtonVariant.danger,
     onConfirm: async () => {
-      const updatedPolicies = policies?.filter(
-        (policy) => policy.name !== selectedPolicy?.name
-      );
-
       try {
-        await adminClient.clientPolicies.updatePolicy({
-          policies: updatedPolicies,
+        await adminClient.components.del({
+          id: selectedPolicy!.id!,
+          realm: realm,
         });
-        addAlert(t("deleteClientPolicySuccess"), AlertVariant.success);
+
+        addAlert(
+          t("deleteClientRegistrationPolicySuccess"),
+          AlertVariant.success
+        );
         refresh();
       } catch (error) {
-        addError(t("deleteClientPolicyError"), error);
+        addError(t("deleteClientRegistrationPolicyError"), error);
       }
     },
   });
