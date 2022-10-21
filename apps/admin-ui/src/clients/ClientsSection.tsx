@@ -7,6 +7,7 @@ import {
   Tab,
   TabTitleText,
   ToolbarItem,
+  Tooltip,
 } from "@patternfly/react-core";
 import { cellWidth, IRowData, TableText } from "@patternfly/react-table";
 import type ClientRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientRepresentation";
@@ -39,7 +40,12 @@ import {
   RoutableTabs,
 } from "../components/routable-tabs/RoutableTabs";
 import { ClientsTab, toClients } from "./routes/Clients";
-import { ClientRegistrationTab } from "./client-registration/ClientRegistrationTab";
+import {
+  ClientRegistrationSubTab,
+  toClientRegistrationTab,
+} from "./routes/ClientRegistration";
+import { AnonymousAccessPoliciesTab } from "./client-registration/AnonymousAccessPoliciesTab";
+import { AuthenticatedAccessPoliciesTab } from "./client-registration/AuthenticatedAccessPoliciesTab";
 
 export default function ClientsSection() {
   const { t } = useTranslation("clients");
@@ -141,6 +147,12 @@ export default function ClientsSection() {
       history,
     });
 
+  const toClientRegistrationRoute = (tab: ClientRegistrationSubTab) =>
+    routableTab({
+      to: toClientRegistrationTab({ realm, tab }),
+      history,
+    });
+
   return (
     <>
       <ViewHeader
@@ -233,11 +245,50 @@ export default function ClientsSection() {
             <InitialAccessTokenList />
           </Tab>
           <Tab
-            title={<TabTitleText>{t("clientRegistration")}</TabTitleText>}
-            data-testid="rs-clientRegistration-tab"
+            title={
+              <TabTitleText>{t("realm-settings:clientPolicies")}</TabTitleText>
+            }
+            data-testid="rs-clientPolicies-tab"
             {...route("client-registration")}
           >
-            <ClientRegistrationTab />
+            <RoutableTabs
+              mountOnEnter
+              defaultLocation={toClientRegistrationTab({
+                realm,
+                tab: "anonymous",
+              })}
+            >
+              <Tab
+                id="anonymousAccessPolicies"
+                data-testid="rs-anonymous-access-policies-tab"
+                aria-label="anonymous-access-policies-subtab"
+                title={
+                  <TabTitleText>{t("anonymousAccessPolicies")}</TabTitleText>
+                }
+                tooltip={
+                  <Tooltip content={t("anonymousAccessPoliciesHelpText")} />
+                }
+                {...toClientRegistrationRoute("anonymous")}
+              >
+                <AnonymousAccessPoliciesTab />
+              </Tab>
+              <Tab
+                id="authenticatedAccessPolicies"
+                data-testid="rs-authenticated-access-policies-tab"
+                aria-label="rs-authenticated-access-policies-tab"
+                title={
+                  <TabTitleText>
+                    {t("authenticatedAccessPolicies")}
+                  </TabTitleText>
+                }
+                tooltip={
+                  <Tooltip content={t("authenticatedAccessPoliciesHelpText")} />
+                }
+                {...toClientRegistrationRoute("authenticated")}
+              >
+                <AuthenticatedAccessPoliciesTab />
+              </Tab>
+            </RoutableTabs>
           </Tab>
         </RoutableTabs>
       </PageSection>

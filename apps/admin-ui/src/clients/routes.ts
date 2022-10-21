@@ -28,6 +28,7 @@ import {
   DedicatedScopeDetailsRoute,
   DedicatedScopeDetailsWithTabRoute,
 } from "./routes/DedicatedScopeDetails";
+import { ClientRegistrationRoute } from "./routes/ClientRegistration";
 import { NewClientRegistrationPolicyProviderRoute } from "./routes/NewClientRegistrationPolicyProvider";
 import { EditClientRegistrationPolicyRoute } from "./routes/EditClientRegistrationPolicy";
 
@@ -54,6 +55,7 @@ const routes: RouteDef[] = [
   NewPermissionRoute,
   NewPermissionWithSelectedIdRoute,
   PermissionDetailsRoute,
+  ClientRegistrationRoute,
   NewClientRegistrationPolicyProviderRoute,
   EditClientRegistrationPolicyRoute,
 ];

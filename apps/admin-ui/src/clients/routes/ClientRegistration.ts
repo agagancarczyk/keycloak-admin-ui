@@ -13,7 +13,7 @@ export type ClientRegistrationParams = {
 export const ClientRegistrationRoute: RouteDef = {
   path: "/:realm/clients/client-registration/:tab",
   component: lazy(() => import("../ClientsSection")),
-  access: "view-realm",
+  access: "view-clients",
 };
 
 export const toClientRegistrationTab = (
