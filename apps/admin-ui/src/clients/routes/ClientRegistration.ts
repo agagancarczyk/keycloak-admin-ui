@@ -3,7 +3,9 @@ import type { Path } from "react-router-dom-v5-compat";
 import { generatePath } from "react-router-dom-v5-compat";
 import type { RouteDef } from "../../route-config";
 
-export type ClientRegistrationSubTab = "anonymous" | "authenticated";
+export type ClientRegistrationSubTab =
+  | "anonymous-access-policies"
+  | "authenticated-access-policies";
 
 export type ClientRegistrationParams = {
   realm: string;

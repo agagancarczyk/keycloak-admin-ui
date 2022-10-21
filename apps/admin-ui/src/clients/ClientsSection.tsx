@@ -255,7 +255,7 @@ export default function ClientsSection() {
               mountOnEnter
               defaultLocation={toClientRegistrationTab({
                 realm,
-                tab: "anonymous",
+                tab: "anonymous-access-policies",
               })}
             >
               <Tab
@@ -268,7 +268,7 @@ export default function ClientsSection() {
                 tooltip={
                   <Tooltip content={t("anonymousAccessPoliciesHelpText")} />
                 }
-                {...toClientRegistrationRoute("anonymous")}
+                {...toClientRegistrationRoute("anonymous-access-policies")}
               >
                 <AnonymousAccessPoliciesTab />
               </Tab>
@@ -284,7 +284,7 @@ export default function ClientsSection() {
                 tooltip={
                   <Tooltip content={t("authenticatedAccessPoliciesHelpText")} />
                 }
-                {...toClientRegistrationRoute("authenticated")}
+                {...toClientRegistrationRoute("authenticated-access-policies")}
               >
                 <AuthenticatedAccessPoliciesTab />
               </Tab>
