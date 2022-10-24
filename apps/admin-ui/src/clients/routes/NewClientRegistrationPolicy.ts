@@ -3,20 +3,20 @@ import type { Path } from "react-router-dom-v5-compat";
 import { generatePath } from "react-router-dom-v5-compat";
 import type { RouteDef } from "../../route-config";
 
-export type NewClientRegistrationPolicyProviderParams = {
+export type NewClientRegistrationPolicyParams = {
   realm: string;
   policyProviderId: string;
 };
 
-export const NewClientRegistrationPolicyProviderRoute: RouteDef = {
+export const NewClientRegistrationPolicyRoute: RouteDef = {
   path: "/:realm/clients/client-registration/new/:policyProviderId",
   component: lazy(() => import("../NewClientRegistrationPolicyForm")),
   breadcrumb: (t) => t("clients:createPolicy"),
   access: "view-clients",
 };
 
-export const toCreateClientRegistrationPolicyProvider = (
-  params: NewClientRegistrationPolicyProviderParams
+export const toCreateClientRegistrationPolicy = (
+  params: NewClientRegistrationPolicyParams
 ): Partial<Path> => ({
-  pathname: generatePath(NewClientRegistrationPolicyProviderRoute.path, params),
+  pathname: generatePath(NewClientRegistrationPolicyRoute.path, params),
 });

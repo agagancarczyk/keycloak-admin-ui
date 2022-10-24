@@ -16,7 +16,7 @@ import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "../../components/alert/Alerts";
 import useToggle from "../../utils/useToggle";
 import { NewClientRegistrationPolicyDialog } from "./NewClientRegistrationPolicyDialog";
-import { toCreateClientRegistrationPolicyProvider } from "../routes/NewClientRegistrationPolicyProvider";
+import { toCreateClientRegistrationPolicy } from "../routes/NewClientRegistrationPolicy";
 import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import useLocaleSort, { mapByKey } from "../../utils/useLocaleSort";
 import { toEditClientRegistrationPolicy } from "../routes/EditClientRegistrationPolicy";
@@ -108,7 +108,7 @@ export const AuthenticatedAccessPoliciesTab = () => {
           policyProviders={policyProviders}
           onSelect={(p) =>
             navigate(
-              toCreateClientRegistrationPolicyProvider({
+              toCreateClientRegistrationPolicy({
                 realm,
                 policyProviderId: p.id!,
               })

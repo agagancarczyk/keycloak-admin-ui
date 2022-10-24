@@ -246,7 +246,7 @@ export default function ClientsSection() {
           </Tab>
           <Tab
             title={<TabTitleText>{t("clientRegistration")}</TabTitleText>}
-            data-testid="rs-clientPolicies-tab"
+            data-testid="rs-client-registration-tab"
             {...route("client-registration")}
           >
             <RoutableTabs
