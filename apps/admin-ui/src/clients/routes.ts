@@ -1,6 +1,7 @@
 import type { RouteDef } from "../route-config";
 import { AddClientRoute } from "./routes/AddClient";
 import { ClientRoute } from "./routes/Client";
+import { ClientRegistrationRoute } from "./routes/ClientRegistration";
 import { ClientsRoute, ClientsRouteWithTab } from "./routes/Clients";
 import { CreateInitialAccessTokenRoute } from "./routes/CreateInitialAccessToken";
 import { ImportClientRoute } from "./routes/ImportClient";
@@ -28,13 +29,13 @@ import {
   DedicatedScopeDetailsRoute,
   DedicatedScopeDetailsWithTabRoute,
 } from "./routes/DedicatedScopeDetails";
-import { ClientRegistrationRoute } from "./routes/ClientRegistration";
 import { NewClientRegistrationPolicyProviderRoute } from "./routes/NewClientRegistrationPolicyProvider";
 import { EditClientRegistrationPolicyRoute } from "./routes/EditClientRegistrationPolicy";
 
 const routes: RouteDef[] = [
   AddClientRoute,
   ImportClientRoute,
+  ClientRegistrationRoute,
   ClientsRoute,
   ClientsRouteWithTab,
   CreateInitialAccessTokenRoute,
@@ -55,7 +56,6 @@ const routes: RouteDef[] = [
   NewPermissionRoute,
   NewPermissionWithSelectedIdRoute,
   PermissionDetailsRoute,
-  ClientRegistrationRoute,
   NewClientRegistrationPolicyProviderRoute,
   EditClientRegistrationPolicyRoute,
 ];
