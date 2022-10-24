@@ -245,9 +245,7 @@ export default function ClientsSection() {
             <InitialAccessTokenList />
           </Tab>
           <Tab
-            title={
-              <TabTitleText>{t("realm-settings:clientPolicies")}</TabTitleText>
-            }
+            title={<TabTitleText>{t("clientRegistration")}</TabTitleText>}
             data-testid="rs-clientPolicies-tab"
             {...route("client-registration")}
           >
@@ -261,7 +259,7 @@ export default function ClientsSection() {
               <Tab
                 id="anonymousAccessPolicies"
                 data-testid="rs-anonymous-access-policies-tab"
-                aria-label="anonymous-access-policies-subtab"
+                aria-label="anonymous-access-policies-tab"
                 title={
                   <TabTitleText>{t("anonymousAccessPolicies")}</TabTitleText>
                 }
@@ -275,7 +273,7 @@ export default function ClientsSection() {
               <Tab
                 id="authenticatedAccessPolicies"
                 data-testid="rs-authenticated-access-policies-tab"
-                aria-label="rs-authenticated-access-policies-tab"
+                aria-label="authenticated-access-policies-tab"
                 title={
                   <TabTitleText>
                     {t("authenticatedAccessPolicies")}
