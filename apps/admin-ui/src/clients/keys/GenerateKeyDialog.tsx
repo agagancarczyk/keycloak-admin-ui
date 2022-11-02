@@ -33,15 +33,24 @@ type GenerateKeyDialogProps = {
 
 type KeyFormProps = {
   useFile?: boolean;
+  isSaml?: boolean;
+  hasPem?: boolean;
 };
 
-export const KeyForm = ({ useFile = false }: KeyFormProps) => {
+const CERT_PEM = "Certificate PEM" as const;
+
+export const KeyForm = ({
+  isSaml = false,
+  hasPem = false,
+  useFile = false,
+}: KeyFormProps) => {
   const { t } = useTranslation("clients");
 
   const [filename, setFilename] = useState<string>();
   const [openArchiveFormat, setOpenArchiveFormat] = useState(false);
 
-  const { control } = useFormContext<KeyStoreConfig>();
+  const { control, watch } = useFormContext<KeyStoreConfig>();
+  const format = watch("format");
 
   return (
     <Form className="pf-u-pt-lg">
@@ -72,13 +81,15 @@ export const KeyForm = ({ useFile = false }: KeyFormProps) => {
               aria-label={t("archiveFormat")}
               isOpen={openArchiveFormat}
             >
-              {["JKS", "PKCS12"].map((option) => (
-                <SelectOption
-                  selected={option === value}
-                  key={option}
-                  value={option}
-                />
-              ))}
+              {["JKS", "PKCS12"]
+                .concat(hasPem ? CERT_PEM : [])
+                .map((option) => (
+                  <SelectOption
+                    selected={option === value}
+                    key={option}
+                    value={option}
+                  />
+                ))}
             </Select>
           )}
         />
@@ -113,7 +124,9 @@ export const KeyForm = ({ useFile = false }: KeyFormProps) => {
           />
         </FormGroup>
       )}
-      <StoreSettings hidePassword={useFile} />
+      {format !== CERT_PEM && (
+        <StoreSettings hidePassword={useFile} isSaml={isSaml} />
+      )}
     </Form>
   );
 };
