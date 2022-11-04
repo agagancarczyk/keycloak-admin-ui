@@ -41,10 +41,10 @@ export const AnonymousAccessPoliciesTab = () => {
   useFetch(
     () =>
       Promise.all([
-        adminClient.components.listClientRegistrationPolicies({
+        adminClient.components.find({
           type: "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy",
         }),
-        adminClient.clientRegistrationPolicies.find(),
+        adminClient.realms.getClientRegistrationPolicyProviders({ realm }),
       ]),
     ([policies, providers]) => {
       setPolicies(localeSort(policies, mapByKey("name")));
