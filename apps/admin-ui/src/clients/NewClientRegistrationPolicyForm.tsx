@@ -75,6 +75,27 @@ export default function PolicyDetails() {
           role="view-clients"
         >
           <FormGroup
+            label={t("common:provider")}
+            labelIcon={
+              <HelpItem
+                helpText={policyProvider?.[0].helpText}
+                fieldLabelId="clientRegistrationPolicyProvider"
+              />
+            }
+            fieldId="kc-client-registration-policy-provider"
+            isRequired
+            helperTextInvalid={form.errors.name?.message}
+          >
+            <KeycloakTextInput
+              type="text"
+              id="kc-client-registration-policy-provider"
+              name="provider"
+              aria-label={t("provider")}
+              data-testid="client-registration-policy-provider"
+              ref={form.register()}
+            />
+          </FormGroup>
+          <FormGroup
             label={t("common:name")}
             labelIcon={
               <HelpItem
@@ -104,6 +125,7 @@ export default function PolicyDetails() {
               type="text"
               id="kc-client-registration-policy-name"
               name="name"
+              aria-label={t("name")}
               data-testid="client-registration-policy-name"
               validated={
                 form.errors.name
