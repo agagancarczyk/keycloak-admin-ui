@@ -7,7 +7,9 @@ import {
   ActionGroup,
   Button,
   ButtonVariant,
+  FormGroup,
   PageSection,
+  ValidatedOptions,
 } from "@patternfly/react-core";
 
 import { NewClientRegistrationPolicyParams } from "./routes/NewClientRegistrationPolicy";
@@ -19,6 +21,8 @@ import { DynamicComponents } from "../components/dynamic/DynamicComponents";
 import ComponentTypeRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentTypeRepresentation";
 import { toClientRegistrationTab } from "./routes/ClientRegistration";
 import { ConfigPropertyRepresentation } from "@keycloak/keycloak-admin-client/lib/defs/authenticatorConfigInfoRepresentation";
+import { KeycloakTextInput } from "../components/keycloak-text-input/KeycloakTextInput";
+import { HelpItem } from "../components/help-enabler/HelpItem";
 
 export default function PolicyDetails() {
   const { t } = useTranslation("clients");
@@ -26,12 +30,10 @@ export default function PolicyDetails() {
     useParams<NewClientRegistrationPolicyParams>();
   const form = useForm({ shouldUnregister: false });
   const { handleSubmit } = form;
-
   const { adminClient } = useAdminClient();
-
+  const [providers, setProviders] = useState<ComponentTypeRepresentation[]>([]);
   const [policyProvider, setPolicyProvider] =
     useState<ComponentTypeRepresentation[]>();
-
   const [providerProperties, setProviderProperties] = useState<
     ConfigPropertyRepresentation[]
   >([]);
@@ -45,16 +47,15 @@ export default function PolicyDetails() {
       const selectedProvider = providers.filter(
         (provider) => provider.id === policyProviderId
       );
-      return { selectedProvider };
+      return { providers, selectedProvider };
     },
-    ({ selectedProvider }) => {
+    ({ providers, selectedProvider }) => {
+      setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0].properties);
     },
     []
   );
-
-  console.log(">>>> providerProperties ", providerProperties);
 
   const save = () => {
     console.log(">>>> save client registration policy");
@@ -73,6 +74,44 @@ export default function PolicyDetails() {
           onSubmit={handleSubmit(save)}
           role="view-clients"
         >
+          <FormGroup
+            label={t("common:name")}
+            labelIcon={
+              <HelpItem
+                helpText={t("clientRegistrationPolicyNameHelp")}
+                fieldLabelId="clientRegistrationPolicyName"
+              />
+            }
+            fieldId="kc-client-registration-policy-name"
+            isRequired
+            helperTextInvalid={form.errors.name?.message}
+            validated={
+              form.errors.name
+                ? ValidatedOptions.error
+                : ValidatedOptions.default
+            }
+          >
+            <KeycloakTextInput
+              ref={form.register({
+                required: { value: true, message: t("common:required") },
+                validate: (value) =>
+                  providers.some((provider) => provider.id === value)
+                    ? t(
+                        "createClientRegistrationPolicyNameHelperText"
+                      ).toString()
+                    : true,
+              })}
+              type="text"
+              id="kc-client-registration-policy-name"
+              name="name"
+              data-testid="client-registration-policy-name"
+              validated={
+                form.errors.name
+                  ? ValidatedOptions.error
+                  : ValidatedOptions.default
+              }
+            />
+          </FormGroup>
           <FormProvider {...form}>
             <DynamicComponents properties={providerProperties!} />
           </FormProvider>

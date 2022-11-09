@@ -539,5 +539,8 @@
   "anonymousAccessPoliciesHelpText": "Those Policies are used when the Client Registration Service is invoked by unauthenticated request. This means that the request does not contain Initial Access Token nor Bearer Token.",
   "authenticatedAccessPoliciesHelpText": "Those Policies are used when Client Registration Service is invoked by authenticated request. This means that the request contains Initial Access Token or Bearer Token.",
   "policyDetails": "Policy details",
-  "providers": "Providers"
+  "providers": "Providers",
+  "createClientRegistrationPolicyNameHelperText": "The name must be unique",
+  "clientRegistrationPolicyNameHelp": "Display Name of the policy",
+  "clientRegistrationPolicyProviderHelp": "When present, it allows to specify whitelist of client scopes, which will be allowed in representation of registered (or updated) client"
 }
