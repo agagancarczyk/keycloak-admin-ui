@@ -78,7 +78,7 @@ export default function PolicyDetails() {
             label={t("common:name")}
             labelIcon={
               <HelpItem
-                helpText={t("clientRegistrationPolicyNameHelp")}
+                helpText={t("clientRegistrationPolicyNameHelpText")}
                 fieldLabelId="clientRegistrationPolicyName"
               />
             }

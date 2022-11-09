@@ -541,6 +541,6 @@
   "policyDetails": "Policy details",
   "providers": "Providers",
   "createClientRegistrationPolicyNameHelperText": "The name must be unique",
-  "clientRegistrationPolicyNameHelp": "Display Name of the policy",
-  "clientRegistrationPolicyProviderHelp": "When present, it allows to specify whitelist of client scopes, which will be allowed in representation of registered (or updated) client"
+  "clientRegistrationPolicyNameHelpText": "Display Name of the policy",
+  "clientRegistrationPolicyProviderHelpText": "When present, it allows to specify whitelist of client scopes, which will be allowed in representation of registered (or updated) client"
 }
