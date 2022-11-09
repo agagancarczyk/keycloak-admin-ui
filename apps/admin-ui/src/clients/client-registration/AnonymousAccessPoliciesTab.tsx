@@ -106,11 +106,11 @@ export const AnonymousAccessPoliciesTab = () => {
       {newDialog && (
         <NewClientRegistrationPolicyDialog
           policyProviders={policyProviders}
-          onSelect={(p) =>
+          onSelect={(policy) =>
             navigate(
               toCreateClientRegistrationPolicy({
                 realm,
-                policyProviderId: p.id!,
+                policyProviderId: policy.id!,
               })
             )
           }
