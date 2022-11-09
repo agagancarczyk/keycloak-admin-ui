@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom-v5-compat";
+import { Link, useNavigate, useParams } from "react-router-dom-v5-compat";
 import { useTranslation } from "react-i18next";
 import {
   AlertVariant,
@@ -16,7 +16,10 @@ import { useRealm } from "../../context/realm-context/RealmContext";
 import { useAlerts } from "../../components/alert/Alerts";
 import useToggle from "../../utils/useToggle";
 import { NewClientRegistrationPolicyDialog } from "./NewClientRegistrationPolicyDialog";
-import { toCreateClientRegistrationPolicy } from "../routes/NewClientRegistrationPolicy";
+import {
+  NewClientRegistrationPolicyParams,
+  toCreateClientRegistrationPolicy,
+} from "../routes/NewClientRegistrationPolicy";
 import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import useLocaleSort, { mapByKey } from "../../utils/useLocaleSort";
 import { toEditClientRegistrationPolicy } from "../routes/EditClientRegistrationPolicy";
@@ -26,6 +29,7 @@ export const AnonymousAccessPoliciesTab = () => {
   const { t } = useTranslation("clients");
   const { adminClient } = useAdminClient();
   const { addAlert, addError } = useAlerts();
+  const { tab } = useParams<NewClientRegistrationPolicyParams>();
   const { realm } = useRealm();
   const [policies, setPolicies] = useState<ComponentRepresentation[]>();
   const [selectedPolicy, setSelectedPolicy] =
@@ -111,6 +115,7 @@ export const AnonymousAccessPoliciesTab = () => {
               toCreateClientRegistrationPolicy({
                 realm,
                 policyProviderId: policy.id!,
+                tab: tab!,
               })
             )
           }
