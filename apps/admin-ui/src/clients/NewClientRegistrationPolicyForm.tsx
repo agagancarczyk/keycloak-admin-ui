@@ -26,7 +26,7 @@ import { HelpItem } from "../components/help-enabler/HelpItem";
 
 export default function PolicyDetails() {
   const { t } = useTranslation("clients");
-  const { realm, policyProviderId } =
+  const { realm, tab, policyProviderId } =
     useParams<NewClientRegistrationPolicyParams>();
   const form = useForm({ shouldUnregister: false });
   const { handleSubmit } = form;
@@ -37,6 +37,10 @@ export default function PolicyDetails() {
   const [providerProperties, setProviderProperties] = useState<
     ConfigPropertyRepresentation[]
   >([]);
+  const subType =
+    tab === "authenticated-access-policies" ? "authenticated" : "anonymous";
+
+  console.log(">>>>> subType ", subType);
 
   useFetch(
     async () => {
@@ -83,7 +87,6 @@ export default function PolicyDetails() {
               />
             }
             fieldId="kc-client-registration-policy-provider"
-            isRequired
             helperTextInvalid={form.errors.name?.message}
           >
             <KeycloakTextInput
