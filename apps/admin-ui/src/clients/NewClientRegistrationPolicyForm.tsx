@@ -49,10 +49,12 @@ export default function PolicyDetails() {
     },
     ({ selectedProvider }) => {
       setPolicyProvider(selectedProvider);
-      setProviderProperties(selectedProvider[0].properties ?? []);
+      setProviderProperties(selectedProvider[0].properties);
     },
     []
   );
+
+  console.log(">>>> providerProperties ", providerProperties);
 
   const save = () => {
     console.log(">>>> save client registration policy");
