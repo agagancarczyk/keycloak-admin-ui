@@ -26,7 +26,7 @@ import { HelpItem } from "../components/help-enabler/HelpItem";
 
 export default function PolicyDetails() {
   const { t } = useTranslation("clients");
-  const { realm, tab, policyProviderId } =
+  const { realm, tab, providerId } =
     useParams<NewClientRegistrationPolicyParams>();
   const form = useForm({ shouldUnregister: false });
   const { handleSubmit } = form;
@@ -37,10 +37,9 @@ export default function PolicyDetails() {
   const [providerProperties, setProviderProperties] = useState<
     ConfigPropertyRepresentation[]
   >([]);
+  const [parentId, setParentId] = useState<string>();
   const subType =
     tab === "authenticated-access-policies" ? "authenticated" : "anonymous";
-
-  console.log(">>>>> subType ", subType);
 
   useFetch(
     async () => {
@@ -49,23 +48,35 @@ export default function PolicyDetails() {
           realm,
         });
       const selectedProvider = providers.filter(
-        (provider) => provider.id === policyProviderId
+        (provider) => provider.id === providerId
       );
-      return { providers, selectedProvider };
+      const realmInfo = await adminClient.realms.findOne({ realm });
+      return { providers, selectedProvider, realmInfo };
     },
-    ({ providers, selectedProvider }) => {
+    ({ providers, selectedProvider, realmInfo }) => {
       setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0].properties);
+      setParentId(realmInfo?.id);
     },
     []
   );
 
-  const save = () => {
-    console.log(">>>> save client registration policy");
+  const save = async () => {
+    const createdForm = form.getValues();
+    const createdPolicy = {
+      ...createdForm,
+      parentId,
+      providerId,
+      providerType:
+        "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy",
+      subType: subType,
+    };
+
+    console.log(">>>>> createdForm ", createdPolicy);
   };
 
-  if (policyProviderId && !policyProvider) {
+  if (providerId && !policyProvider) {
     return <KeycloakSpinner />;
   }
 

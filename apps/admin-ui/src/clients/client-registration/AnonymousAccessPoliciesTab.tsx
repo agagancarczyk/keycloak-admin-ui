@@ -114,7 +114,7 @@ export const AnonymousAccessPoliciesTab = () => {
             navigate(
               toCreateClientRegistrationPolicy({
                 realm,
-                policyProviderId: policy.id!,
+                providerId: policy.id!,
                 tab: tab!,
               })
             )

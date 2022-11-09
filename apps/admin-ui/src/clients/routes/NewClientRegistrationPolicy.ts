@@ -10,11 +10,11 @@ export type ClientRegistrationSubTab =
 export type NewClientRegistrationPolicyParams = {
   realm: string;
   tab: ClientRegistrationSubTab;
-  policyProviderId: string;
+  providerId: string;
 };
 
 export const NewClientRegistrationPolicyRoute: RouteDef = {
-  path: "/:realm/clients/client-registration/:tab/new/:policyProviderId",
+  path: "/:realm/clients/client-registration/:tab/new/:providerId",
   component: lazy(() => import("../NewClientRegistrationPolicyForm")),
   breadcrumb: (t) => t("clients:createPolicy"),
   access: "view-clients",
