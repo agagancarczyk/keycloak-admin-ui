@@ -83,14 +83,19 @@ export default function PolicyDetails() {
       providerId,
       providerType: CLIENT_REGISTRATION_POLICY_PROVIDER,
       parentId,
-      subType: subType,
+      subType,
     });
 
     try {
       await adminClient.components.create(saveComponent);
       addAlert(t("saveProviderSuccess"), AlertVariant.success);
       navigate(
-        toClientRegistrationTab({ realm, tab: "anonymous-access-policies" })
+        subType === "anonymous"
+          ? toClientRegistrationTab({ realm, tab: "anonymous-access-policies" })
+          : toClientRegistrationTab({
+              realm,
+              tab: "authenticated-access-policies",
+            })
       );
     } catch (error) {
       addError("saveProviderError", error);
