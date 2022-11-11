@@ -905,6 +905,8 @@ describe("Clients test", () => {
 
       commonPage.sidebar().waitForPageLoad();
 
+      serviceAccountTab.hideInheritedRoles();
+
       serviceAccountTab
         .selectRow("offline_access")
         .selectRow("admin")
@@ -922,6 +924,8 @@ describe("Clients test", () => {
       commonPage.modalUtils().confirmModal();
 
       commonPage.sidebar().waitForPageLoad();
+
+      serviceAccountTab.unhideInheritedRoles();
 
       serviceAccountTab
         .checkRoles(["create-realm"], false)
@@ -1023,8 +1027,8 @@ describe("Clients test", () => {
     });
 
     it("Displays the correct tabs", () => {
+      clientDetailsPage.goToSettingsTab();
       clientDetailsPage
-        .goToSettingsTab()
         .tabUtils()
         .checkTabExists(ClientsDetailsTab.Settings, true)
         .checkTabExists(ClientsDetailsTab.Roles, true)
