@@ -161,6 +161,9 @@ export const emailRegexPattern =
 
 export const KEY_PROVIDER_TYPE = "org.keycloak.keys.KeyProvider";
 
+export const CLIENT_REGISTRATION_POLICY_PROVIDER =
+  "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy";
+
 export const prettyPrintJSON = (value: any) => JSON.stringify(value, null, 2);
 
 export const addTrailingSlash = (url: string) =>

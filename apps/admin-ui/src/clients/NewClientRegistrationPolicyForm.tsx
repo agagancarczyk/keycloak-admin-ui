@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom-v5-compat";
+import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { useTranslation } from "react-i18next";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   ActionGroup,
+  AlertVariant,
   Button,
   ButtonVariant,
   FormGroup,
@@ -23,9 +24,16 @@ import { toClientRegistrationTab } from "./routes/ClientRegistration";
 import { ConfigPropertyRepresentation } from "@keycloak/keycloak-admin-client/lib/defs/authenticatorConfigInfoRepresentation";
 import { KeycloakTextInput } from "../components/keycloak-text-input/KeycloakTextInput";
 import { HelpItem } from "../components/help-enabler/HelpItem";
+import {
+  CLIENT_REGISTRATION_POLICY_PROVIDER,
+  convertFormValuesToObject,
+} from "../util";
+import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
+import { useAlerts } from "../components/alert/Alerts";
 
 export default function PolicyDetails() {
   const { t } = useTranslation("clients");
+  const navigate = useNavigate();
   const { realm, tab, providerId } =
     useParams<NewClientRegistrationPolicyParams>();
   const form = useForm({ shouldUnregister: false });
@@ -40,6 +48,7 @@ export default function PolicyDetails() {
   const [parentId, setParentId] = useState<string>();
   const subType =
     tab === "authenticated-access-policies" ? "authenticated" : "anonymous";
+  const { addAlert, addError } = useAlerts();
 
   useFetch(
     async () => {
@@ -62,18 +71,30 @@ export default function PolicyDetails() {
     []
   );
 
-  const save = async () => {
-    const createdForm = form.getValues();
-    const createdPolicy = {
-      ...createdForm,
-      parentId,
+  const save = async (component: ComponentRepresentation) => {
+    const saveComponent = convertFormValuesToObject({
+      ...component,
+      config: Object.fromEntries(
+        Object.entries(component.config || {}).map(([key, value]) => [
+          key,
+          Array.isArray(value) ? value : [value],
+        ])
+      ),
       providerId,
-      providerType:
-        "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy",
+      providerType: CLIENT_REGISTRATION_POLICY_PROVIDER,
+      parentId,
       subType: subType,
-    };
+    });
 
-    console.log(">>>>> createdForm ", createdPolicy);
+    try {
+      await adminClient.components.create(saveComponent);
+      addAlert(t("saveProviderSuccess"), AlertVariant.success);
+      navigate(
+        toClientRegistrationTab({ realm, tab: "anonymous-access-policies" })
+      );
+    } catch (error) {
+      addError("saveProviderError", error);
+    }
   };
 
   if (providerId && !policyProvider) {
@@ -101,12 +122,12 @@ export default function PolicyDetails() {
             helperTextInvalid={form.errors.name?.message}
           >
             <KeycloakTextInput
-              type="text"
+              defaultValue={providerId}
               id="kc-client-registration-policy-provider"
               name="provider"
               aria-label={t("provider")}
               data-testid="client-registration-policy-provider"
-              ref={form.register()}
+              isReadOnly
             />
           </FormGroup>
           <FormGroup
