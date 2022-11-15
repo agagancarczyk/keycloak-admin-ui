@@ -30,28 +30,54 @@ import {
 } from "../util";
 import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import { useAlerts } from "../components/alert/Alerts";
+import { EditClientRegistrationPolicyParams } from "./routes/EditClientRegistrationPolicy";
 
-export default function PolicyDetails() {
+type NewClientRegistrationPolicyForm = Required<ComponentRepresentation>;
+
+const defaultValues: NewClientRegistrationPolicyForm = {
+  id: "",
+  name: "",
+  providerId: "",
+  providerType: "",
+  parentId: "",
+  subType: "",
+  config: {},
+};
+
+export default function NewClientRegistrationPolicyForm() {
   const { t } = useTranslation("clients");
   const navigate = useNavigate();
   const { realm, tab, providerId } =
     useParams<NewClientRegistrationPolicyParams>();
-  const form = useForm({ shouldUnregister: false });
+  const { policyId } = useParams<EditClientRegistrationPolicyParams>();
+  const form = useForm({ shouldUnregister: false, defaultValues });
   const { handleSubmit } = form;
   const { adminClient } = useAdminClient();
+  // const [selectedPolicy, setSelectedPolicy] =
+  //   useState<ComponentRepresentation[]>();
   const [providers, setProviders] = useState<ComponentTypeRepresentation[]>([]);
   const [policyProvider, setPolicyProvider] =
     useState<ComponentTypeRepresentation[]>();
   const [providerProperties, setProviderProperties] = useState<
     ConfigPropertyRepresentation[]
   >([]);
+  const [selectedPolicyProvider, setSelectedPolicyProvider] = useState<
+    ComponentTypeRepresentation[]
+  >([]);
   const [parentId, setParentId] = useState<string>();
   const subType =
     tab === "authenticated-access-policies" ? "authenticated" : "anonymous";
   const { addAlert, addError } = useAlerts();
+  // const editMode = !!policyId;
 
   useFetch(
     async () => {
+      const policies = await adminClient.components.find({
+        type: CLIENT_REGISTRATION_POLICY_PROVIDER,
+      });
+      const selectedPolicy = policies.filter(
+        (policy) => policy.id === policyId
+      );
       const providers =
         await adminClient.realms.getClientRegistrationPolicyProviders({
           realm,
@@ -59,17 +85,37 @@ export default function PolicyDetails() {
       const selectedProvider = providers.filter(
         (provider) => provider.id === providerId
       );
+
+      const selectedPolicyProvider = providers.filter(
+        (provider) => provider.id === selectedPolicy[0].providerId!
+      );
       const realmInfo = await adminClient.realms.findOne({ realm });
-      return { providers, selectedProvider, realmInfo };
+      return {
+        selectedPolicy,
+        providers,
+        selectedProvider,
+        selectedPolicyProvider,
+        realmInfo,
+      };
     },
-    ({ providers, selectedProvider, realmInfo }) => {
+    ({
+      // selectedPolicy,
+      providers,
+      selectedProvider,
+      selectedPolicyProvider,
+      realmInfo,
+    }) => {
+      // setSelectedPolicy(selectedPolicy);
       setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0].properties);
+      setSelectedPolicyProvider(selectedPolicyProvider);
       setParentId(realmInfo?.id);
     },
     []
   );
+
+  console.log(">>>>> selectedPolicyProvider ", selectedPolicyProvider);
 
   const save = async (component: ComponentRepresentation) => {
     const saveComponent = convertFormValuesToObject({
@@ -119,7 +165,7 @@ export default function PolicyDetails() {
             label={t("common:provider")}
             labelIcon={
               <HelpItem
-                helpText={policyProvider?.[0].helpText}
+                helpText={policyProvider?.[0].helpText!}
                 fieldLabelId="clientRegistrationPolicyProvider"
               />
             }

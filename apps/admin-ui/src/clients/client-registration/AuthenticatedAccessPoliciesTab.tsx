@@ -24,6 +24,7 @@ import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/co
 import useLocaleSort, { mapByKey } from "../../utils/useLocaleSort";
 import { toEditClientRegistrationPolicy } from "../routes/EditClientRegistrationPolicy";
 import ComponentTypeRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentTypeRepresentation";
+import { CLIENT_REGISTRATION_POLICY_PROVIDER } from "../../util";
 
 export const AuthenticatedAccessPoliciesTab = () => {
   const { t } = useTranslation("clients");
@@ -46,7 +47,7 @@ export const AuthenticatedAccessPoliciesTab = () => {
     () =>
       Promise.all([
         adminClient.components.find({
-          type: "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy",
+          type: CLIENT_REGISTRATION_POLICY_PROVIDER,
         }),
         adminClient.realms.getClientRegistrationPolicyProviders({ realm }),
       ]),
