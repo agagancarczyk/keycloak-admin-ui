@@ -106,7 +106,10 @@ export default function NewClientRegistrationPolicyForm() {
     []
   );
 
-  console.log(">>>>> selectedPolicyProvider ", selectedPolicyProvider);
+  console.log(
+    ">>>>> selectedPolicyProvider ",
+    selectedPolicyProvider[0].helpText
+  );
 
   const save = async (component: ComponentRepresentation) => {
     const saveComponent = convertFormValuesToObject({
