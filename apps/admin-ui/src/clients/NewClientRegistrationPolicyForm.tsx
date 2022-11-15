@@ -53,8 +53,6 @@ export default function NewClientRegistrationPolicyForm() {
   const form = useForm({ shouldUnregister: false, defaultValues });
   const { handleSubmit } = form;
   const { adminClient } = useAdminClient();
-  // const [selectedPolicy, setSelectedPolicy] =
-  //   useState<ComponentRepresentation[]>();
   const [providers, setProviders] = useState<ComponentTypeRepresentation[]>([]);
   const [policyProvider, setPolicyProvider] =
     useState<ComponentTypeRepresentation[]>();
@@ -98,14 +96,7 @@ export default function NewClientRegistrationPolicyForm() {
         realmInfo,
       };
     },
-    ({
-      // selectedPolicy,
-      providers,
-      selectedProvider,
-      selectedPolicyProvider,
-      realmInfo,
-    }) => {
-      // setSelectedPolicy(selectedPolicy);
+    ({ providers, selectedProvider, selectedPolicyProvider, realmInfo }) => {
       setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0].properties);
