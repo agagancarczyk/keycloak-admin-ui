@@ -50,6 +50,7 @@ export default function NewClientRegistrationPolicyForm() {
   const { realm, tab, providerId } =
     useParams<NewClientRegistrationPolicyParams>();
   const { policyId } = useParams<EditClientRegistrationPolicyParams>();
+  const [policies, setPolicies] = useState<ComponentRepresentation[]>();
   const form = useForm({ shouldUnregister: false, defaultValues });
   const { handleSubmit } = form;
   const { adminClient } = useAdminClient();
@@ -59,23 +60,17 @@ export default function NewClientRegistrationPolicyForm() {
   const [providerProperties, setProviderProperties] = useState<
     ConfigPropertyRepresentation[]
   >([]);
-  const [selectedPolicyProvider, setSelectedPolicyProvider] = useState<
-    ComponentTypeRepresentation[]
-  >([]);
   const [parentId, setParentId] = useState<string>();
   const subType =
     tab === "authenticated-access-policies" ? "authenticated" : "anonymous";
   const { addAlert, addError } = useAlerts();
-  // const editMode = !!policyId;
+  const editMode = !!policyId;
 
   useFetch(
     async () => {
       const policies = await adminClient.components.find({
         type: CLIENT_REGISTRATION_POLICY_PROVIDER,
       });
-      const selectedPolicy = policies.filter(
-        (policy) => policy.id === policyId
-      );
       const providers =
         await adminClient.realms.getClientRegistrationPolicyProviders({
           realm,
@@ -83,33 +78,32 @@ export default function NewClientRegistrationPolicyForm() {
       const selectedProvider = providers.filter(
         (provider) => provider.id === providerId
       );
-
-      const selectedPolicyProvider = providers.filter(
-        (provider) => provider.id === selectedPolicy[0].providerId!
-      );
       const realmInfo = await adminClient.realms.findOne({ realm });
       return {
-        selectedPolicy,
+        policies,
         providers,
         selectedProvider,
-        selectedPolicyProvider,
         realmInfo,
       };
     },
-    ({ providers, selectedProvider, selectedPolicyProvider, realmInfo }) => {
+    ({ policies, providers, selectedProvider, realmInfo }) => {
+      setPolicies(policies);
       setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0].properties);
-      setSelectedPolicyProvider(selectedPolicyProvider);
       setParentId(realmInfo?.id);
     },
     []
   );
 
-  console.log(
-    ">>>>> selectedPolicyProvider ",
-    selectedPolicyProvider[0].helpText
-  );
+  let editedPolicyProviderHelpText = "";
+  if (editMode && providers.length > 0) {
+    const editedPolicy = policies?.filter((policy) => policy.id === policyId);
+    const editedPolicyProvider = providers.filter(
+      (provider) => provider.id === editedPolicy?.[0].providerId!
+    );
+    editedPolicyProviderHelpText = editedPolicyProvider[0].helpText!;
+  }
 
   const save = async (component: ComponentRepresentation) => {
     const saveComponent = convertFormValuesToObject({
@@ -159,7 +153,11 @@ export default function NewClientRegistrationPolicyForm() {
             label={t("common:provider")}
             labelIcon={
               <HelpItem
-                helpText={policyProvider?.[0].helpText!}
+                helpText={
+                  editMode
+                    ? editedPolicyProviderHelpText
+                    : policyProvider?.[0].helpText!
+                }
                 fieldLabelId="clientRegistrationPolicyProvider"
               />
             }
