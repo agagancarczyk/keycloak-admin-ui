@@ -28,7 +28,6 @@ import {
   CLIENT_REGISTRATION_POLICY_PROVIDER,
   convertFormValuesToObject,
 } from "../util";
-import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentRepresentation";
 import { useAlerts } from "../components/alert/Alerts";
 import { EditClientRegistrationPolicyParams } from "./routes/EditClientRegistrationPolicy";
 
@@ -56,9 +55,17 @@ export default function NewClientRegistrationPolicyForm() {
   const { realm, tab, providerId } =
     useParams<NewClientRegistrationPolicyParams>();
   const { policyId } = useParams<EditClientRegistrationPolicyParams>();
-  const [policies, setPolicies] = useState<ComponentRepresentation[]>();
-  const form = useForm({ shouldUnregister: false, defaultValues });
-  const { handleSubmit } = form;
+  // const [policies, setPolicies] = useState<ComponentRepresentation[]>();
+  const form = useForm<NewClientRegistrationPolicyForm>({
+    shouldUnregister: false,
+    defaultValues,
+  });
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { isDirty, errors },
+  } = form;
   const { adminClient } = useAdminClient();
   const [providers, setProviders] = useState<ComponentTypeRepresentation[]>([]);
   const [policyProvider, setPolicyProvider] =
@@ -67,6 +74,8 @@ export default function NewClientRegistrationPolicyForm() {
     ConfigPropertyRepresentation[]
   >([]);
   const [parentId, setParentId] = useState<string>();
+  const [helpText, setHelpText] = useState<string>();
+
   const subType =
     tab === "authenticated-access-policies" ? "authenticated" : "anonymous";
   const { addAlert, addError } = useAlerts();
@@ -90,42 +99,38 @@ export default function NewClientRegistrationPolicyForm() {
         providers,
         selectedProvider,
         realmInfo,
-        editedPolicyProviderHelpText,
       };
     },
     ({ policies, providers, selectedProvider, realmInfo }) => {
-      setPolicies(policies);
+      // setPolicies(policies);
       setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0]?.properties);
       setParentId(realmInfo?.id);
+      if (editMode && providers.length > 0) {
+        const editedPolicy = policies.filter(
+          (policy) => policy.id === policyId
+        );
+        const editedPolicyProvider = providers.filter(
+          (provider) => provider.id === editedPolicy[0].providerId!
+        );
+        setHelpText(editedPolicyProvider[0].helpText!);
+        setValue("providerId", editedPolicy[0].providerId!);
+        setValue("name", editedPolicy[0].name!);
+        setValue("properties", editedPolicyProvider[0].properties);
+      }
     },
     []
   );
 
-  let editedPolicyProviderName = "";
-  let editedPolicyProviderHelpText = "";
-  let editedPolicyProviderProperties: ConfigPropertyRepresentation[] = [];
-  if (editMode && providers.length > 0) {
-    const editedPolicy = policies?.filter((policy) => policy.id === policyId);
-    const editedPolicyProvider = providers.filter(
-      (provider) => provider.id === editedPolicy?.[0].providerId!
-    );
-    editedPolicyProviderName = editedPolicy?.[0].name!;
-    editedPolicyProviderHelpText = editedPolicyProvider[0].helpText!;
-    editedPolicyProviderProperties = editedPolicyProvider[0].properties;
-  }
-
-  console.log(editedPolicyProviderName);
-
-  const save = async (component: ComponentRepresentation) => {
+  const save = async (form: NewClientRegistrationPolicyForm) => {
+    const newClientRegistrationPolicy = form;
     const saveComponent = convertFormValuesToObject({
-      ...component,
+      ...newClientRegistrationPolicy,
       config: Object.fromEntries(
-        Object.entries(component.config || {}).map(([key, value]) => [
-          key,
-          Array.isArray(value) ? value : [value],
-        ])
+        Object.entries(newClientRegistrationPolicy.config).map(
+          ([key, value]) => [key, Array.isArray(value) ? value : [value]]
+        )
       ),
       providerId,
       providerType: CLIENT_REGISTRATION_POLICY_PROVIDER,
@@ -157,30 +162,22 @@ export default function NewClientRegistrationPolicyForm() {
     <>
       <ViewHeader titleKey={t("createPolicy")} />
       <PageSection variant="light">
-        <FormAccess
-          isHorizontal
-          onSubmit={handleSubmit(save)}
-          role="view-clients"
-        >
+        <FormAccess isHorizontal role="view-clients">
           <FormGroup
             label={t("common:provider")}
             labelIcon={
               <HelpItem
-                helpText={
-                  editMode
-                    ? editedPolicyProviderHelpText
-                    : policyProvider?.[0].helpText!
-                }
+                helpText={editMode ? helpText : policyProvider?.[0].helpText!}
                 fieldLabelId="clientRegistrationPolicyProvider"
               />
             }
             fieldId="kc-client-registration-policy-provider"
-            helperTextInvalid={form.errors.name?.message}
           >
             <KeycloakTextInput
-              defaultValue={providerId}
+              ref={register()}
+              value={providerId}
               id="kc-client-registration-policy-provider"
-              name="provider"
+              name="providerId"
               aria-label={t("provider")}
               data-testid="client-registration-policy-provider"
               isReadOnly
@@ -196,15 +193,13 @@ export default function NewClientRegistrationPolicyForm() {
             }
             fieldId="kc-client-registration-policy-name"
             isRequired
-            helperTextInvalid={form.errors.name?.message}
+            helperTextInvalid={errors.name?.message}
             validated={
-              form.errors.name
-                ? ValidatedOptions.error
-                : ValidatedOptions.default
+              errors.name ? ValidatedOptions.error : ValidatedOptions.default
             }
           >
             <KeycloakTextInput
-              ref={form.register({
+              ref={register({
                 required: { value: true, message: t("common:required") },
                 validate: (value) =>
                   providers.some((provider) => provider.id === value)
@@ -219,26 +214,21 @@ export default function NewClientRegistrationPolicyForm() {
               aria-label={t("name")}
               data-testid="client-registration-policy-name"
               validated={
-                form.errors.name
-                  ? ValidatedOptions.error
-                  : ValidatedOptions.default
+                errors.name ? ValidatedOptions.error : ValidatedOptions.default
               }
             />
           </FormGroup>
           <FormProvider {...form}>
-            <DynamicComponents
-              properties={
-                editMode ? editedPolicyProviderProperties : providerProperties!
-              }
-            />
+            <DynamicComponents properties={providerProperties!} />
           </FormProvider>
           <ActionGroup>
             <div className="pf-u-mt-md">
               <Button
                 variant={ButtonVariant.primary}
                 className="pf-u-mr-md"
-                type="submit"
+                onClick={() => handleSubmit(save)()}
                 data-testid="save"
+                isDisabled={!isDirty}
               >
                 {t("common:save")}
               </Button>
