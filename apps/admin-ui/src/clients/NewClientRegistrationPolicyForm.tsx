@@ -32,10 +32,16 @@ import ComponentRepresentation from "@keycloak/keycloak-admin-client/lib/defs/co
 import { useAlerts } from "../components/alert/Alerts";
 import { EditClientRegistrationPolicyParams } from "./routes/EditClientRegistrationPolicy";
 
-type NewClientRegistrationPolicyForm = Required<ComponentRepresentation>;
+type NewClientRegistrationPolicyForm = {
+  name: string;
+  providerId: string;
+  providerType: string;
+  parentId: string;
+  subType: string;
+  config: {};
+};
 
 const defaultValues: NewClientRegistrationPolicyForm = {
-  id: "",
   name: "",
   providerId: "",
   providerType: "",
@@ -84,26 +90,33 @@ export default function NewClientRegistrationPolicyForm() {
         providers,
         selectedProvider,
         realmInfo,
+        editedPolicyProviderHelpText,
       };
     },
     ({ policies, providers, selectedProvider, realmInfo }) => {
       setPolicies(policies);
       setProviders(providers);
       setPolicyProvider(selectedProvider);
-      setProviderProperties(selectedProvider[0].properties);
+      setProviderProperties(selectedProvider[0]?.properties);
       setParentId(realmInfo?.id);
     },
     []
   );
 
+  let editedPolicyProviderName = "";
   let editedPolicyProviderHelpText = "";
+  let editedPolicyProviderProperties: ConfigPropertyRepresentation[] = [];
   if (editMode && providers.length > 0) {
     const editedPolicy = policies?.filter((policy) => policy.id === policyId);
     const editedPolicyProvider = providers.filter(
       (provider) => provider.id === editedPolicy?.[0].providerId!
     );
+    editedPolicyProviderName = editedPolicy?.[0].name!;
     editedPolicyProviderHelpText = editedPolicyProvider[0].helpText!;
+    editedPolicyProviderProperties = editedPolicyProvider[0].properties;
   }
+
+  console.log(editedPolicyProviderName);
 
   const save = async (component: ComponentRepresentation) => {
     const saveComponent = convertFormValuesToObject({
@@ -213,7 +226,11 @@ export default function NewClientRegistrationPolicyForm() {
             />
           </FormGroup>
           <FormProvider {...form}>
-            <DynamicComponents properties={providerProperties!} />
+            <DynamicComponents
+              properties={
+                editMode ? editedPolicyProviderProperties : providerProperties!
+              }
+            />
           </FormProvider>
           <ActionGroup>
             <div className="pf-u-mt-md">
