@@ -26,13 +26,24 @@ import { toEditClientRegistrationPolicy } from "../routes/EditClientRegistration
 import ComponentTypeRepresentation from "@keycloak/keycloak-admin-client/lib/defs/componentTypeRepresentation";
 import { CLIENT_REGISTRATION_POLICY_PROVIDER } from "../../util";
 
-export const AnonymousAccessPoliciesTab = () => {
+type ClientRegistrationPolicyType = "anonymous" | "authenticated";
+
+type ClientRegistrationPolicyTabsProps = {
+  type: ClientRegistrationPolicyType;
+};
+
+export const ClientRegistrationPolicyTabs = ({
+  type,
+}: ClientRegistrationPolicyTabsProps) => {
   const { t } = useTranslation("clients");
   const { adminClient } = useAdminClient();
   const { addAlert, addError } = useAlerts();
   const { tab } = useParams<NewClientRegistrationPolicyParams>();
   const { realm } = useRealm();
-  const [policies, setPolicies] = useState<ComponentRepresentation[]>();
+  const [anonymousPolicies, setAnonymousPolicies] =
+    useState<ComponentRepresentation[]>();
+  const [authenticatedPolicies, setAuthenticatedPolicies] =
+    useState<ComponentRepresentation[]>();
   const [selectedPolicy, setSelectedPolicy] =
     useState<ComponentRepresentation>();
   const [key, setKey] = useState(0);
@@ -52,14 +63,23 @@ export const AnonymousAccessPoliciesTab = () => {
         adminClient.realms.getClientRegistrationPolicyProviders({ realm }),
       ]),
     ([policies, providers]) => {
-      setPolicies(localeSort(policies, mapByKey("name")));
       setPolicyProviders(localeSort(providers, mapByKey("id")));
+      let anonymousPolicies: ComponentRepresentation[];
+      let authenticatedPolicies: ComponentRepresentation[];
+      if (type === "anonymous") {
+        anonymousPolicies = policies.filter(
+          (policy) => policy.subType !== "authenticated"
+        );
+      } else {
+        authenticatedPolicies = policies.filter(
+          (policy) => policy.subType !== "anonymous"
+        );
+      }
+      setAnonymousPolicies(anonymousPolicies!);
+      setAuthenticatedPolicies(authenticatedPolicies!);
     },
     [key]
   );
-
-  const loader = async () =>
-    policies?.filter((policy) => policy.subType !== "authenticated") ?? [];
 
   const ClientRegistrationPolicyDetailLink = ({
     id,
@@ -101,7 +121,7 @@ export const AnonymousAccessPoliciesTab = () => {
     },
   });
 
-  if (!policies) {
+  if (!anonymousPolicies && !authenticatedPolicies) {
     return <KeycloakSpinner />;
   }
 
@@ -124,7 +144,11 @@ export const AnonymousAccessPoliciesTab = () => {
         />
       )}
       <KeycloakDataTable
-        key={policies.length}
+        key={
+          type !== "anonymous"
+            ? authenticatedPolicies?.length
+            : authenticatedPolicies?.length
+        }
         emptyState={
           <ListEmptyState
             message={t("noClientPolicies")}
@@ -136,7 +160,11 @@ export const AnonymousAccessPoliciesTab = () => {
         ariaLabelKey="clients:clientPolicies"
         searchPlaceholderKey="clients:clientPolicySearch"
         isPaginated
-        loader={loader}
+        loader={
+          type !== "anonymous"
+            ? localeSort(authenticatedPolicies!, mapByKey("name"))
+            : localeSort(anonymousPolicies!, mapByKey("name"))
+        }
         toolbarItem={
           <ToolbarItem>
             <Button data-testid="createClientPolicy" onClick={toggleDialog}>

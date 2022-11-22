@@ -44,8 +44,7 @@ import {
   ClientRegistrationSubTab,
   toClientRegistrationTab,
 } from "./routes/ClientRegistration";
-import { AnonymousAccessPoliciesTab } from "./client-registration/AnonymousAccessPoliciesTab";
-import { AuthenticatedAccessPoliciesTab } from "./client-registration/AuthenticatedAccessPoliciesTab";
+import { ClientRegistrationPolicyTabs } from "./client-registration/ClientRegistrationPolicyTabs";
 
 export default function ClientsSection() {
   const { t } = useTranslation("clients");
@@ -268,7 +267,7 @@ export default function ClientsSection() {
                 }
                 {...toClientRegistrationRoute("anonymous-access-policies")}
               >
-                <AnonymousAccessPoliciesTab />
+                <ClientRegistrationPolicyTabs type="anonymous" />
               </Tab>
               <Tab
                 id="authenticatedAccessPolicies"
@@ -284,7 +283,7 @@ export default function ClientsSection() {
                 }
                 {...toClientRegistrationRoute("authenticated-access-policies")}
               >
-                <AuthenticatedAccessPoliciesTab />
+                <ClientRegistrationPolicyTabs type="authenticated" />
               </Tab>
             </RoutableTabs>
           </Tab>

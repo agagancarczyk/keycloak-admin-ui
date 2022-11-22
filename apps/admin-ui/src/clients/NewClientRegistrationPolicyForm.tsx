@@ -146,6 +146,7 @@ export default function NewClientRegistrationPolicyForm() {
   );
 
   console.log(">>>> properties ", properties);
+  console.log(providerProperties);
 
   const save = async (form: NewClientRegistrationPolicyForm) => {
     const newClientRegistrationPolicy = form;
@@ -178,7 +179,7 @@ export default function NewClientRegistrationPolicyForm() {
     }
   };
 
-  if (providerId && !policyProvider) {
+  if (providerId && !policyProvider && !properties) {
     return <KeycloakSpinner />;
   }
 
@@ -244,8 +245,7 @@ export default function NewClientRegistrationPolicyForm() {
           </FormGroup>
           <FormProvider {...form}>
             <DynamicComponents
-              properties={editMode ? properties! : providerProperties!}
-              // properties={providerProperties!}
+              properties={editMode ? properties || [] : providerProperties!}
             />
           </FormProvider>
           <ActionGroup>
