@@ -55,7 +55,6 @@ export default function NewClientRegistrationPolicyForm() {
   const { realm, tab, providerId } =
     useParams<NewClientRegistrationPolicyParams>();
   const { policyId } = useParams<EditClientRegistrationPolicyParams>();
-  // const [policies, setPolicies] = useState<ComponentRepresentation[]>();
   const form = useForm<NewClientRegistrationPolicyForm>({
     shouldUnregister: false,
     defaultValues,
@@ -73,6 +72,8 @@ export default function NewClientRegistrationPolicyForm() {
   const [providerProperties, setProviderProperties] = useState<
     ConfigPropertyRepresentation[]
   >([]);
+  const [properties, setProperties] =
+    useState<ConfigPropertyRepresentation[]>();
   const [parentId, setParentId] = useState<string>();
   const [helpText, setHelpText] = useState<string>();
 
@@ -93,16 +94,19 @@ export default function NewClientRegistrationPolicyForm() {
       const selectedProvider = providers.filter(
         (provider) => provider.id === providerId
       );
+      const selectedPolicy = policies.filter(
+        (policy) => policy.id === policyId
+      );
       const realmInfo = await adminClient.realms.findOne({ realm });
       return {
         policies,
         providers,
         selectedProvider,
+        selectedPolicy,
         realmInfo,
       };
     },
-    ({ policies, providers, selectedProvider, realmInfo }) => {
-      // setPolicies(policies);
+    ({ policies, providers, selectedProvider, selectedPolicy, realmInfo }) => {
       setProviders(providers);
       setPolicyProvider(selectedProvider);
       setProviderProperties(selectedProvider[0]?.properties);
@@ -117,11 +121,31 @@ export default function NewClientRegistrationPolicyForm() {
         setHelpText(editedPolicyProvider[0].helpText!);
         setValue("providerId", editedPolicy[0].providerId!);
         setValue("name", editedPolicy[0].name!);
-        setValue("properties", editedPolicyProvider[0].properties);
+        const editedPolicyConfig = Object.entries(
+          selectedPolicy[0].config!
+        ).map(([key, value]) => ({
+          name: key,
+          options: value,
+          type: "",
+        }));
+
+        const editedProperties: any = [];
+        Array.from(editedPolicyConfig).map((el) => {
+          providers[0].properties.map((provider) => {
+            if (provider.name === el.name) {
+              el.type = provider.type!;
+              editedProperties.push(el);
+            }
+          });
+        });
+        // setValue("properties", editedProperties!);
+        setProperties(editedProperties!);
       }
     },
     []
   );
+
+  console.log(">>>> properties ", properties);
 
   const save = async (form: NewClientRegistrationPolicyForm) => {
     const newClientRegistrationPolicy = form;
@@ -219,7 +243,10 @@ export default function NewClientRegistrationPolicyForm() {
             />
           </FormGroup>
           <FormProvider {...form}>
-            <DynamicComponents properties={providerProperties!} />
+            <DynamicComponents
+              properties={editMode ? properties! : providerProperties!}
+              // properties={providerProperties!}
+            />
           </FormProvider>
           <ActionGroup>
             <div className="pf-u-mt-md">
