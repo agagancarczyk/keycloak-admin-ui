@@ -84,12 +84,14 @@ export const ClientRegistrationPolicyTabs = ({
   const ClientRegistrationPolicyDetailLink = ({
     id,
     name,
+    providerId,
   }: ComponentRepresentation) => (
     <Link
       to={toEditClientRegistrationPolicy({
         realm,
         policyId: id!,
         policyName: name!,
+        providerName: providerId!,
       })}
     >
       {name}
