@@ -52,7 +52,7 @@ button#kc-join-groups-button {
 
 .kc-consents-chip > .pf-c-chip__text {
   font-size: var(--pf-c-table--cell--FontSize);
-  display: contents;
+  max-width: 100%;
 }
 
 .pf-c-chip-group.kc-consents-chip-group
