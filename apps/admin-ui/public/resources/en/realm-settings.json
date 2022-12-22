@@ -57,9 +57,7 @@
   "saveEventListeners": "Save Event Listeners",
   "saveEventListenersSuccess": "Event listener has been updated.",
   "saveEventListenersError": "Error saving event listener: {{error}}",
-  "userEventsConfig": "User events configuration",
   "userEventsSettings": "User events settings",
-  "adminEventsConfig": "Admin events configuration",
   "adminEventsSettings": "Admin events settings",
   "saveEvents": "Save events",
   "expiration": "Expiration",
@@ -97,7 +95,7 @@
   "javaKeystore": "java-keystore",
   "rsa": "rsa",
   "rsaGenerated": "rsa-generated",
-  "consoleDisplayName": "Console Display Name",
+  "uiDisplayName": "UI Display Name",
   "AESKeySize": "AES Key Size",
   "active": "Active",
   "privateRSAKey": "Private RSA Key",
@@ -171,7 +169,7 @@
   "samlIdentityProviderMetadata": "SAML 2.0 Identity Provider Metadata",
   "loginTheme": "Login theme",
   "accountTheme": "Account theme",
-  "adminTheme": "Admin console theme",
+  "adminTheme": "Admin UI theme",
   "emailTheme": "Email theme",
   "internationalization": "Internationalization",
   "localization": "Localization",
@@ -894,5 +892,4 @@
   "importSkipped_zero": "No records skipped.",
   "importSkipped_one": "One record skipped.",
   "importSkipped_other": "{{count}} records skipped."
-
 }

@@ -43,9 +43,9 @@
   "unlockSuccess": "User successfully unlocked",
   "unlockError": "Could not unlock user due to {{error}}",
   "emailInvalid": "You must enter a valid email.",
-  "temporaryDisabled": "Temporarily disabled",
   "notVerified": "Not verified",
   "requiredUserActions": "Required user actions",
+  "federationLink": "Federation link",
   "addUser": "Add user",
   "impersonate": "Impersonate",
   "impersonateConfirm": "Impersonate user?",
@@ -71,7 +71,7 @@
   "link": "Link",
   "linkAccountTitle": "Link account to {{provider}}",
   "idpLinkSuccess": "Identity provider has been linked",
-  "idpUnlinkSuccess" : "The provider link has been removed",
+  "idpUnlinkSuccess": "The provider link has been removed",
   "idpType": {
     "social": "Social login",
     "custom": "Custom"

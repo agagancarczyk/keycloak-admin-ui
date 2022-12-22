@@ -1,14 +1,14 @@
 import LoginPage from "../support/pages/LoginPage";
-import Masthead from "../support/pages/admin_console/Masthead";
+import Masthead from "../support/pages/admin-ui/Masthead";
 import ListingPage, {
   Filter,
   FilterAssignedType,
   FilterProtocol,
-} from "../support/pages/admin_console/ListingPage";
-import SidebarPage from "../support/pages/admin_console/SidebarPage";
-import CreateClientScopePage from "../support/pages/admin_console/manage/client_scopes/CreateClientScopePage";
+} from "../support/pages/admin-ui/ListingPage";
+import SidebarPage from "../support/pages/admin-ui/SidebarPage";
+import CreateClientScopePage from "../support/pages/admin-ui/manage/client_scopes/CreateClientScopePage";
 import { keycloakBefore } from "../support/util/keycloak_hooks";
-import RoleMappingTab from "../support/pages/admin_console/manage/RoleMappingTab";
+import RoleMappingTab from "../support/pages/admin-ui/manage/RoleMappingTab";
 import ModalUtils from "../support/util/ModalUtils";
 import adminClient from "../support/util/AdminClient";
 
@@ -272,12 +272,7 @@ describe("Client Scopes test", () => {
       sidebarPage.waitForPageLoad();
       listingPage.goToCreateItem();
 
-      createClientScopePage.save().checkClientNameRequiredMessage();
-
-      createClientScopePage
-        .fillClientScopeData("address")
-        .save()
-        .checkClientNameRequiredMessage(false);
+      createClientScopePage.fillClientScopeData("address").save();
 
       // The error should inform about duplicated name/id
       masthead.checkNotificationMessage(
@@ -343,7 +338,7 @@ describe("Client Scopes test", () => {
       masthead.checkNotificationMessage("Role mapping updated");
       scopeTab.checkRoles([role]);
       scopeTab.hideInheritedRoles().selectRow(role).unAssign();
-      modalUtils.checkModalTitle("Remove mapping?").confirmModal();
+      modalUtils.checkModalTitle("Remove role?").confirmModal();
       scopeTab.checkRoles([]);
     });
   });

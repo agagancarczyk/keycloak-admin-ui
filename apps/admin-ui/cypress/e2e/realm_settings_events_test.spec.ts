@@ -1,10 +1,10 @@
-import SidebarPage from "../support/pages/admin_console/SidebarPage";
+import SidebarPage from "../support/pages/admin-ui/SidebarPage";
 import LoginPage from "../support/pages/LoginPage";
-import RealmSettingsPage from "../support/pages/admin_console/manage/realm_settings/RealmSettingsPage";
-import Masthead from "../support/pages/admin_console/Masthead";
+import RealmSettingsPage from "../support/pages/admin-ui/manage/realm_settings/RealmSettingsPage";
+import Masthead from "../support/pages/admin-ui/Masthead";
 import ModalUtils from "../support/util/ModalUtils";
 import { keycloakBefore } from "../support/util/keycloak_hooks";
-import ListingPage from "../support/pages/admin_console/ListingPage";
+import ListingPage from "../support/pages/admin-ui/ListingPage";
 import adminClient from "../support/util/AdminClient";
 
 const loginPage = new LoginPage();
@@ -120,6 +120,7 @@ describe("Realm settings events tab tests", () => {
     masthead.checkNotificationMessage("Successfully saved configuration");
     cy.wait(["@fetchConfig"]);
     sidebarPage.waitForPageLoad();
+    cy.wait(1000);
     for (const event of events) {
       listingPage.searchItem(event, false).itemExist(event);
     }
@@ -141,33 +142,39 @@ describe("Realm settings events tab tests", () => {
     realmSettingsPage.toggleAddProviderDropdown();
 
     cy.findByTestId("option-aes-generated").click();
-    realmSettingsPage.enterConsoleDisplayName("test_aes-generated");
-    realmSettingsPage.addProvider();
-
-    realmSettingsPage.toggleAddProviderDropdown();
-
-    cy.findByTestId("option-ecdsa-generated").click();
-    realmSettingsPage.enterConsoleDisplayName("test_ecdsa-generated");
+    realmSettingsPage.enterUIDisplayName("test_aes-generated");
     realmSettingsPage.toggleSwitch("active", false);
-    realmSettingsPage.addProvider();
-
-    realmSettingsPage.toggleAddProviderDropdown();
-
-    cy.findByTestId("option-hmac-generated").click();
-    realmSettingsPage.enterConsoleDisplayName("test_hmac-generated");
     realmSettingsPage.toggleSwitch("enabled", false);
     realmSettingsPage.addProvider();
 
     realmSettingsPage.toggleAddProviderDropdown();
 
+    cy.findByTestId("option-ecdsa-generated").click();
+    realmSettingsPage.enterUIDisplayName("test_ecdsa-generated");
+    realmSettingsPage.toggleSwitch("enabled", false);
+    realmSettingsPage.addProvider();
+
+    realmSettingsPage.toggleAddProviderDropdown();
+
+    cy.findByTestId("option-hmac-generated").click();
+    realmSettingsPage.enterUIDisplayName("test_hmac-generated");
+    realmSettingsPage.toggleSwitch("active", false);
+    realmSettingsPage.addProvider();
+
+    realmSettingsPage.toggleAddProviderDropdown();
+
     cy.findByTestId("option-rsa-generated").click();
-    realmSettingsPage.enterConsoleDisplayName("test_rsa-generated");
+    realmSettingsPage.enterUIDisplayName("test_rsa-generated");
+    realmSettingsPage.toggleSwitch("active", false);
+    realmSettingsPage.toggleSwitch("enabled", false);
     realmSettingsPage.addProvider();
 
     realmSettingsPage.toggleAddProviderDropdown();
 
     cy.findByTestId("option-rsa-enc-generated").click();
-    realmSettingsPage.enterConsoleDisplayName("test_rsa-enc-generated");
+    realmSettingsPage.enterUIDisplayName("test_rsa-enc-generated");
+    realmSettingsPage.toggleSwitch("active", false);
+    realmSettingsPage.toggleSwitch("enabled", false);
     realmSettingsPage.addProvider();
   });
 

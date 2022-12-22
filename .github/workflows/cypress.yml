@@ -1,9 +1,9 @@
 name: Cypress
 on:
   push:
-    branches: [main]
+    branches: [main, release/**]
   pull_request:
-    branches: [main]
+    branches: [main, release/**]
   schedule:
     - cron: '0 4 * * *'
   workflow_dispatch:
@@ -15,14 +15,16 @@ on:
         description: The branch to check out for the Keycloak repo (e.g. main).
         required: false
 concurrency:
-  group: ${{ github.ref }}
+  # Only cancel jobs for new commits on PRs, and always do a complete run on other branches (e.g. `main`).
+  # See: https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
+  group: cypress-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 jobs:
   build-keycloak:
     if: ${{ github.event_name != 'schedule' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out Admin UI
+      - name: Check out repository
         uses: actions/checkout@v3
         with:
           path: admin-ui-repo
@@ -30,7 +32,7 @@ jobs:
       - name: Check out Keycloak Server
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.keycloakRepo || 'keycloak/keycloak' }}
+          repository: ${{ inputs.keycloakRepo || (contains(github.ref, 'release/') && github.ref || 'keycloak/keycloak') }}
           ref: ${{ inputs.keycloakBranch || 'main' }}
           path: keycloak-repo
 
@@ -41,11 +43,6 @@ jobs:
           java-version: 11
           check-latest: true
           cache: maven
-
-      # See https://issues.redhat.com/browse/KEYCLOAK-17812
-      - name: Update Maven settings
-        working-directory: keycloak-repo
-        run: cp .github/settings.xml ~/.m2
 
       - name: Build Admin UI
         working-directory: admin-ui-repo
@@ -87,9 +84,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3, 4, 5]
+        container: [1, 2, 3, 4, 5]
     steps:
-      - name: Check out Admin UI
+      - name: Check out repository
         uses: actions/checkout@v3
 
       - name: Set up Node
@@ -117,13 +114,20 @@ jobs:
       - name: Start Keycloak Server
         run: |
           tar xfvz keycloak-999-SNAPSHOT.tar.gz
-          keycloak-999-SNAPSHOT/bin/kc.sh start-dev --features=admin2,admin-fine-grained-authz,declarative-user-profile &
+          keycloak-999-SNAPSHOT/bin/kc.sh start-dev --features=admin2,admin-fine-grained-authz,declarative-user-profile &> ~/server.log &
         env:
           KEYCLOAK_ADMIN: admin
           KEYCLOAK_ADMIN_PASSWORD: admin
 
+      - name: Install Google Chrome
+        uses: abhi1693/setup-browser@v0.3.5
+        with:
+          browser: chrome
+          version: latest
+
       - name: Run Cypress
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
+        continue-on-error: true
         with:
           install: false
           record: true
@@ -136,3 +140,9 @@ jobs:
           CYPRESS_KEYCLOAK_SERVER: http://localhost:8080
           CYPRESS_RECORD_KEY: b8f1d15e-eab8-4ee7-8e44-c6d7cd8fc0eb
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload server logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: server-log-${{ matrix.container }}
+          path: ~/server.log

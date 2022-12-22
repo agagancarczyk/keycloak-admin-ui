@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { Control, Controller, FieldValues } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import {
   FormGroup,
   Select,
@@ -9,21 +6,24 @@ import {
   Split,
   SplitItem,
 } from "@patternfly/react-core";
+import { useState } from "react";
+import { Controller, useFormContext } from "react-hook-form-v7";
+import { useTranslation } from "react-i18next";
 
+import { HelpItem } from "../../components/help-enabler/HelpItem";
 import {
   TimeSelector,
   Unit,
 } from "../../components/time-selector/TimeSelector";
-import { HelpItem } from "../../components/help-enabler/HelpItem";
 
 type TokenLifespanProps = {
   id: string;
   name: string;
-  defaultValue: string;
-  control: Control<FieldValues>;
+  defaultValue?: number;
   units?: Unit[];
 };
 
+const inherited = "tokenLifespan.inherited";
 const never = "tokenLifespan.never";
 const expires = "tokenLifespan.expires";
 
@@ -31,7 +31,6 @@ export const TokenLifespan = ({
   id,
   name,
   defaultValue,
-  control,
   units,
 }: TokenLifespanProps) => {
   const { t } = useTranslation("clients");
@@ -41,6 +40,7 @@ export const TokenLifespan = ({
   const onFocus = () => setFocused(true);
   const onBlur = () => setFocused(false);
 
+  const { control } = useFormContext();
   const isExpireSet = (value: string | number) =>
     (typeof value === "number" && value !== -1) ||
     (typeof value === "string" && value !== "" && value !== "-1") ||
@@ -59,9 +59,9 @@ export const TokenLifespan = ({
     >
       <Controller
         name={name}
-        defaultValue={defaultValue}
+        defaultValue=""
         control={control}
-        render={({ onChange, value }) => (
+        render={({ field }) => (
           <Split hasGutter>
             <SplitItem>
               <Select
@@ -69,24 +69,32 @@ export const TokenLifespan = ({
                 onToggle={setOpen}
                 isOpen={open}
                 onSelect={(_, value) => {
-                  onChange(value);
+                  field.onChange(value);
                   setOpen(false);
                 }}
-                selections={[isExpireSet(value) ? t(expires) : t(never)]}
+                selections={[
+                  isExpireSet(field.value)
+                    ? t(expires)
+                    : field.value === ""
+                    ? t(inherited)
+                    : t(never),
+                ]}
               >
+                <SelectOption value="">{t(inherited)}</SelectOption>
                 <SelectOption value={-1}>{t(never)}</SelectOption>
                 <SelectOption value={60}>{t(expires)}</SelectOption>
               </Select>
             </SplitItem>
             <SplitItem>
-              {isExpireSet(value) && (
+              {field.value !== "-1" && field.value !== -1 && (
                 <TimeSelector
                   units={units}
-                  value={value}
-                  onChange={onChange}
+                  value={field.value === "" ? defaultValue : field.value}
+                  onChange={field.onChange}
                   onFocus={onFocus}
                   onBlur={onBlur}
                   min={1}
+                  isDisabled={field.value === ""}
                 />
               )}
             </SplitItem>

@@ -1,10 +1,11 @@
-import { useTranslation } from "react-i18next";
-import { useFormContext } from "react-hook-form";
 import { FormGroup } from "@patternfly/react-core";
+import { useFormContext } from "react-hook-form-v7";
+import { useTranslation } from "react-i18next";
 
 import { HelpItem } from "../../components/help-enabler/HelpItem";
 import { KeycloakTextInput } from "../../components/keycloak-text-input/KeycloakTextInput";
 import { convertAttributeNameToForm } from "../../util";
+import { FormFields } from "../ClientDetails";
 
 export const ApplicationUrls = () => {
   const { t } = useTranslation("clients");
@@ -23,11 +24,12 @@ export const ApplicationUrls = () => {
         }
       >
         <KeycloakTextInput
-          type="text"
           id="logoUrl"
-          name={convertAttributeNameToForm("attributes.logoUri")}
+          type="url"
           data-testid="logoUrl"
-          ref={register}
+          {...register(
+            convertAttributeNameToForm<FormFields>("attributes.logoUri")
+          )}
         />
       </FormGroup>
       <FormGroup
@@ -41,11 +43,12 @@ export const ApplicationUrls = () => {
         }
       >
         <KeycloakTextInput
-          type="text"
           id="policyUrl"
-          name={convertAttributeNameToForm("attributes.policyUri")}
           data-testid="policyUrl"
-          ref={register}
+          type="url"
+          {...register(
+            convertAttributeNameToForm<FormFields>("attributes.policyUri")
+          )}
         />
       </FormGroup>
       <FormGroup
@@ -59,11 +62,12 @@ export const ApplicationUrls = () => {
         }
       >
         <KeycloakTextInput
-          type="text"
           id="termsOfServiceUrl"
-          name={convertAttributeNameToForm("attributes.tosUri")}
+          type="url"
           data-testid="termsOfServiceUrl"
-          ref={register}
+          {...register(
+            convertAttributeNameToForm<FormFields>("attributes.tosUri")
+          )}
         />
       </FormGroup>
     </>

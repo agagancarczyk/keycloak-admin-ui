@@ -31,6 +31,7 @@ import type RequiredActionProviderRepresentation from "@keycloak/keycloak-admin-
 import { useAccess } from "../context/access/Access";
 import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
 import { UserProfileFields } from "./UserProfileFields";
+import { FederatedUserLink } from "./FederatedUserLink";
 
 export type BruteForced = {
   isBruteForceProtected?: boolean;
@@ -167,7 +168,7 @@ export const UserForm = ({
             setOpen(false);
           }}
           onClose={() => setOpen(false)}
-          filterGroups={selectedGroups.map((group) => group.name!)}
+          filterGroups={selectedGroups}
         />
       )}
       {user?.id && (
@@ -242,6 +243,19 @@ export const UserForm = ({
           )}
         />
       </FormGroup>
+      {(user?.federationLink || user?.origin) && (
+        <FormGroup
+          label={t("federationLink")}
+          labelIcon={
+            <HelpItem
+              helpText="users-help:federationLink"
+              fieldLabelId="users:federationLink"
+            />
+          }
+        >
+          <FederatedUserLink user={user} />
+        </FormGroup>
+      )}
       {isFeatureEnabled(Feature.DeclarativeUserProfile) &&
       realm?.attributes?.userProfileEnabled === "true" ? (
         <UserProfileFields />

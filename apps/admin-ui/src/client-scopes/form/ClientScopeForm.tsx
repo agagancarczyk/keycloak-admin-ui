@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom-v5-compat";
-import { useTranslation } from "react-i18next";
+import type ProtocolMapperRepresentation from "@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation";
+import type { RoleMappingPayload } from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
+import type { ProtocolMapperTypeRepresentation } from "@keycloak/keycloak-admin-client/lib/defs/serverInfoRepesentation";
 import {
   AlertVariant,
   ButtonVariant,
@@ -10,31 +9,34 @@ import {
   Tab,
   TabTitleText,
 } from "@patternfly/react-core";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom-v5-compat";
 
-import { useAdminClient, useFetch } from "../../context/auth/AdminClient";
 import { useAlerts } from "../../components/alert/Alerts";
-import { ViewHeader } from "../../components/view-header/ViewHeader";
-import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinner";
-import { convertFormValuesToObject } from "../../util";
-import { MapperList } from "../details/MapperList";
-import { ScopeForm } from "../details/ScopeForm";
-import { useConfirmDialog } from "../../components/confirm-dialog/ConfirmDialog";
-import { RoleMapping, Row } from "../../components/role-mapping/RoleMapping";
-import type { RoleMappingPayload } from "@keycloak/keycloak-admin-client/lib/defs/roleRepresentation";
-import type { ProtocolMapperTypeRepresentation } from "@keycloak/keycloak-admin-client/lib/defs/serverInfoRepesentation";
-import type ProtocolMapperRepresentation from "@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation";
 import {
   AllClientScopes,
   changeScope,
+  ClientScope,
   ClientScopeDefaultOptionalType,
 } from "../../components/client-scope/ClientScopeTypes";
-import { useRealm } from "../../context/realm-context/RealmContext";
-import { toMapper } from "../routes/Mapper";
-import { ClientScopeTab, toClientScope } from "../routes/ClientScope";
+import { useConfirmDialog } from "../../components/confirm-dialog/ConfirmDialog";
+import { KeycloakSpinner } from "../../components/keycloak-spinner/KeycloakSpinner";
+import { RoleMapping, Row } from "../../components/role-mapping/RoleMapping";
 import {
   routableTab,
   RoutableTabs,
 } from "../../components/routable-tabs/RoutableTabs";
+import { ViewHeader } from "../../components/view-header/ViewHeader";
+import { useAdminClient, useFetch } from "../../context/auth/AdminClient";
+import { useRealm } from "../../context/realm-context/RealmContext";
+import { convertFormValuesToObject } from "../../util";
+import { useParams } from "../../utils/useParams";
+import { MapperList } from "../details/MapperList";
+import { ScopeForm } from "../details/ScopeForm";
+import { ClientScopeTab, toClientScope } from "../routes/ClientScope";
+import { toMapper } from "../routes/Mapper";
 
 export default function ClientScopeForm() {
   const { t } = useTranslation("client-scopes");
@@ -45,7 +47,7 @@ export default function ClientScopeForm() {
   const { realm } = useRealm();
 
   const { adminClient } = useAdminClient();
-  const { id, type } = useParams<{ id: string; type: AllClientScopes }>();
+  const { id } = useParams<{ id: string }>();
 
   const { addAlert, addError } = useAlerts();
 
@@ -59,9 +61,23 @@ export default function ClientScopeForm() {
         if (!clientScope) {
           throw new Error(t("common:notFound"));
         }
+
+        const defaultScopes =
+          await adminClient.clientScopes.listDefaultClientScopes();
+        const optionalScopes =
+          await adminClient.clientScopes.listDefaultOptionalClientScopes();
+
         return {
           ...clientScope,
-          type,
+          type: defaultScopes.find(
+            (defaultScope) => defaultScope.name === clientScope.name
+          )
+            ? ClientScope.default
+            : optionalScopes.find(
+                (optionalScope) => optionalScope.name === clientScope.name
+              )
+            ? ClientScope.optional
+            : AllClientScopes.none,
         };
       }
     },
@@ -80,11 +96,7 @@ export default function ClientScopeForm() {
 
       if (id) {
         await adminClient.clientScopes.update({ id }, clientScopes);
-        changeScope(
-          adminClient,
-          { ...clientScopes, id, type },
-          clientScopes.type
-        );
+        changeScope(adminClient, { ...clientScopes, id }, clientScopes.type);
       } else {
         await adminClient.clientScopes.create(clientScopes);
         const scope = await adminClient.clientScopes.findOneByName({
@@ -103,7 +115,6 @@ export default function ClientScopeForm() {
           toClientScope({
             realm,
             id: scope.id!,
-            type: clientScopes.type || "none",
             tab: "settings",
           })
         );
@@ -172,7 +183,6 @@ export default function ClientScopeForm() {
         toMapper({
           realm,
           id: clientScope!.id!,
-          type,
           mapperId: mapper.id!,
         })
       );
@@ -214,7 +224,6 @@ export default function ClientScopeForm() {
         realm,
         id,
         tab,
-        type,
       }),
       history,
     });
@@ -242,7 +251,7 @@ export default function ClientScopeForm() {
       <PageSection variant="light" className="pf-u-p-0">
         {!id && (
           <PageSection variant="light">
-            <ScopeForm save={save} clientScope={{}} />
+            <ScopeForm save={save} />
           </PageSection>
         )}
         {id && clientScope && (
@@ -268,7 +277,7 @@ export default function ClientScopeForm() {
                 onAdd={addMappers}
                 onDelete={onDelete}
                 detailLink={(id) =>
-                  toMapper({ realm, id: clientScope.id!, type, mapperId: id! })
+                  toMapper({ realm, id: clientScope.id!, mapperId: id! })
                 }
               />
             </Tab>

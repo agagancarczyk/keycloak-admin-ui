@@ -1,16 +1,16 @@
-import Masthead from "../support/pages/admin_console/Masthead";
-import SidebarPage from "../support/pages/admin_console/SidebarPage";
+import Masthead from "../support/pages/admin-ui/Masthead";
+import SidebarPage from "../support/pages/admin-ui/SidebarPage";
 import LoginPage from "../support/pages/LoginPage";
 import { keycloakBefore } from "../support/util/keycloak_hooks";
-import ListingPage from "../support/pages/admin_console/ListingPage";
-import CreateProviderPage from "../support/pages/admin_console/manage/identity_providers/CreateProviderPage";
+import ListingPage from "../support/pages/admin-ui/ListingPage";
+import CreateProviderPage from "../support/pages/admin-ui/manage/identity_providers/CreateProviderPage";
 import ModalUtils from "../support/util/ModalUtils";
-import AddMapperPage from "../support/pages/admin_console/manage/identity_providers/AddMapperPage";
-import ProviderBaseGeneralSettingsPage from "../support/pages/admin_console/manage/identity_providers/ProviderBaseGeneralSettingsPage";
+import AddMapperPage from "../support/pages/admin-ui/manage/identity_providers/AddMapperPage";
+import ProviderBaseGeneralSettingsPage from "../support/pages/admin-ui/manage/identity_providers/ProviderBaseGeneralSettingsPage";
 import ProviderBaseAdvancedSettingsPage, {
   ClientAuthentication,
   PromptSelect,
-} from "../support/pages/admin_console/manage/identity_providers/ProviderBaseAdvancedSettingsPage";
+} from "../support/pages/admin-ui/manage/identity_providers/ProviderBaseAdvancedSettingsPage";
 
 describe("OIDC identity provider test", () => {
   const loginPage = new LoginPage();
@@ -50,6 +50,7 @@ describe("OIDC identity provider test", () => {
       createProviderPage
         .fillDiscoveryUrl(discoveryUrl)
         .shouldBeSuccessful()
+        .fillDisplayName(oidcProviderName)
         .fill(oidcProviderName, secret)
         .clickAdd();
       masthead.checkNotificationMessage(createSuccessMsg, true);
@@ -119,6 +120,15 @@ describe("OIDC identity provider test", () => {
       addMapperPage.addMapper();
       addMapperPage.addOIDCClaimToRoleMapper("OIDC Claim to Role");
       masthead.checkNotificationMessage(createMapperSuccessMsg, true);
+    });
+
+    it("should cancel the addition of the OIDC mapper", () => {
+      sidebarPage.goToIdentityProviders();
+      listingPage.goToItemDetails(oidcProviderName);
+      addMapperPage.goToMappersTab();
+      addMapperPage.addMapper();
+      addMapperPage.cancelNewMapper();
+      addMapperPage.shouldGoToMappersTab();
     });
 
     it("clean up providers", () => {

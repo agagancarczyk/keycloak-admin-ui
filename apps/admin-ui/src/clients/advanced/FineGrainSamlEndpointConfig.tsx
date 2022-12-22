@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next";
-import type { Control } from "react-hook-form";
 import { ActionGroup, Button, FormGroup } from "@patternfly/react-core";
+import { useFormContext } from "react-hook-form-v7";
+import { useTranslation } from "react-i18next";
 
 import { FormAccess } from "../../components/form-access/FormAccess";
 import { HelpItem } from "../../components/help-enabler/HelpItem";
@@ -8,17 +8,16 @@ import { KeycloakTextInput } from "../../components/keycloak-text-input/Keycloak
 import { ApplicationUrls } from "./ApplicationUrls";
 
 type FineGrainSamlEndpointConfigProps = {
-  control: Control<Record<string, any>>;
   save: () => void;
   reset: () => void;
 };
 
 export const FineGrainSamlEndpointConfig = ({
-  control: { register },
   save,
   reset,
 }: FineGrainSamlEndpointConfigProps) => {
   const { t } = useTranslation("clients");
+  const { register } = useFormContext();
   return (
     <FormAccess role="manage-realm" isHorizontal>
       <ApplicationUrls />
@@ -33,10 +32,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="assertionConsumerServicePostBindingURL"
-          name="attributes.saml_assertion_consumer_url_post"
+          type="url"
+          {...register("attributes.saml_assertion_consumer_url_post")}
         />
       </FormGroup>
       <FormGroup
@@ -50,10 +48,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="assertionConsumerServiceRedirectBindingURL"
-          name="attributes.saml_assertion_consumer_url_redirect"
+          type="url"
+          {...register("attributes.saml_assertion_consumer_url_redirect")}
         />
       </FormGroup>
       <FormGroup
@@ -67,10 +64,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="logoutServicePostBindingURL"
-          name="attributes.saml_single_logout_service_url_post"
+          type="url"
+          {...register("attributes.saml_single_logout_service_url_post")}
         />
       </FormGroup>
       <FormGroup
@@ -84,10 +80,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="logoutServiceRedirectBindingURL"
-          name="attributes.saml_single_logout_service_url_redirect"
+          type="url"
+          {...register("attributes.saml_single_logout_service_url_redirect")}
         />
       </FormGroup>
       <FormGroup
@@ -101,10 +96,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="logoutServiceArtifactBindingUrl"
-          name="attributes.saml_single_logout_service_url_artifact"
+          type="url"
+          {...register("attributes.saml_single_logout_service_url_artifact")}
         />
       </FormGroup>
       <FormGroup
@@ -118,10 +112,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="artifactBindingUrl"
-          name="attributes.saml_artifact_binding_url"
+          type="url"
+          {...register("attributes.saml_artifact_binding_url")}
         />
       </FormGroup>
       <FormGroup
@@ -135,10 +128,9 @@ export const FineGrainSamlEndpointConfig = ({
         }
       >
         <KeycloakTextInput
-          ref={register()}
-          type="text"
           id="artifactResolutionService"
-          name="attributes.saml_artifact_resolution_service_url"
+          type="url"
+          {...register("attributes.saml_artifact_resolution_service_url")}
         />
       </FormGroup>
 

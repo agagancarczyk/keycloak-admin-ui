@@ -1,14 +1,14 @@
 import LoginPage from "../support/pages/LoginPage";
-import Masthead from "../support/pages/admin_console/Masthead";
+import Masthead from "../support/pages/admin-ui/Masthead";
 import ModalUtils from "../support/util/ModalUtils";
-import ListingPage from "../support/pages/admin_console/ListingPage";
-import SidebarPage from "../support/pages/admin_console/SidebarPage";
-import createRealmRolePage from "../support/pages/admin_console/manage/realm_roles/CreateRealmRolePage";
-import AssociatedRolesPage from "../support/pages/admin_console/manage/realm_roles/AssociatedRolesPage";
+import ListingPage from "../support/pages/admin-ui/ListingPage";
+import SidebarPage from "../support/pages/admin-ui/SidebarPage";
+import createRealmRolePage from "../support/pages/admin-ui/manage/realm_roles/CreateRealmRolePage";
+import AssociatedRolesPage from "../support/pages/admin-ui/manage/realm_roles/AssociatedRolesPage";
 import { keycloakBefore } from "../support/util/keycloak_hooks";
 import adminClient from "../support/util/AdminClient";
-import ClientRolesTab from "../support/pages/admin_console/manage/clients/ClientRolesTab";
-import KeyValueInput from "../support/pages/admin_console/manage/KeyValueInput";
+import ClientRolesTab from "../support/pages/admin-ui/manage/clients/ClientRolesTab";
+import KeyValueInput from "../support/pages/admin-ui/manage/KeyValueInput";
 
 let itemId = "realm_role_crud";
 const loginPage = new LoginPage();
@@ -153,7 +153,7 @@ describe("Realm roles test", () => {
     rolesTab.goToAssociatedRolesTab();
     listingPage.removeItem("create-realm");
     sidebarPage.waitForPageLoad();
-    modalUtils.checkModalTitle("Remove mapping?").confirmModal();
+    modalUtils.checkModalTitle("Remove role?").confirmModal();
     sidebarPage.waitForPageLoad();
 
     masthead.checkNotificationMessage(
@@ -172,7 +172,7 @@ describe("Realm roles test", () => {
     associatedRolesPage.removeAssociatedRoles();
 
     sidebarPage.waitForPageLoad();
-    modalUtils.checkModalTitle("Remove mapping?").confirmModal();
+    modalUtils.checkModalTitle("Remove role?").confirmModal();
     sidebarPage.waitForPageLoad();
 
     masthead.checkNotificationMessage(
@@ -203,7 +203,7 @@ describe("Realm roles test", () => {
     // delete associated roles from list
     listingPage.removeItem("create-realm");
     sidebarPage.waitForPageLoad();
-    modalUtils.checkModalTitle("Remove mapping?").confirmModal();
+    modalUtils.checkModalTitle("Remove role?").confirmModal();
     sidebarPage.waitForPageLoad();
 
     masthead.checkNotificationMessage(
@@ -212,7 +212,7 @@ describe("Realm roles test", () => {
     );
     listingPage.removeItem("offline_access");
     sidebarPage.waitForPageLoad();
-    modalUtils.checkModalTitle("Remove mapping?").confirmModal();
+    modalUtils.checkModalTitle("Remove role?").confirmModal();
     sidebarPage.waitForPageLoad();
 
     masthead.checkNotificationMessage(

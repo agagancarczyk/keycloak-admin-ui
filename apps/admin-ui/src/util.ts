@@ -1,16 +1,23 @@
+import { saveAs } from "file-saver";
 import { cloneDeep } from "lodash-es";
-import FileSaver from "file-saver";
-import type { IFormatter, IFormatterValueType } from "@patternfly/react-table";
+import {
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormSetValue,
+} from "react-hook-form-v7";
 import { flatten } from "flat";
 
 import type ClientRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientRepresentation";
 import type { ProviderRepresentation } from "@keycloak/keycloak-admin-client/lib/defs/serverInfoRepesentation";
+import type { IFormatter, IFormatterValueType } from "@patternfly/react-table";
 
 import {
-  keyValueToArray,
   arrayToKeyValue,
+  keyValueToArray,
   KeyValueType,
 } from "./components/key-value-form/key-value-convert";
+import { ReplaceString } from "./utils/types";
 
 export const sortProviders = (providers: {
   [index: string]: ProviderRepresentation;
@@ -51,7 +58,7 @@ export const exportClient = (client: ClientRepresentation): void => {
     }
   }
 
-  FileSaver.saveAs(
+  saveAs(
     new Blob([prettyPrintJSON(clientCopy)], {
       type: "application/json",
     }),
@@ -82,21 +89,27 @@ const isAttributeArray = (value: any) => {
 
 const isEmpty = (obj: any) => Object.keys(obj).length === 0;
 
-export const convertAttributeNameToForm = (name: string) => {
+export function convertAttributeNameToForm<T>(
+  name: string
+): PathValue<T, Path<T>> {
   const index = name.indexOf(".");
-  return `${name.substring(0, index)}.${convertAttribute(
+  return `${name.substring(0, index)}.${beerify(
     name.substring(index + 1)
-  )}`;
-};
+  )}` as PathValue<T, Path<T>>;
+}
 
-const convertAttribute = (name: string) => name.replace(/\./g, "🍺");
-const convertFormNameToAttribute = (name: string) => name.replace(/🍺/g, ".");
+export const beerify = <T extends string>(name: T) =>
+  name.replaceAll(".", "🍺") as ReplaceString<T, ".", "🍺">;
 
-export const convertToFormValues = (
-  obj: any,
-  setValue: (name: string, value: any) => void
-) => {
-  Object.entries(obj).map(([key, value]) => {
+const debeerify = <T extends string>(name: T) =>
+  name.replaceAll("🍺", ".") as ReplaceString<T, "🍺", ".">;
+
+export function convertToFormValues<T extends FieldValues>(
+  obj: FieldValues,
+  setValue: UseFormSetValue<T>
+) {
+  Object.entries(obj).map((entry) => {
+    const [key, value] = entry as [Path<T>, any];
     if (key === "attributes" && isAttributesObject(value)) {
       setValue(key, arrayToKeyValue(value as Record<string, string[]>));
     } else if (key === "config" || key === "attributes") {
@@ -107,16 +120,16 @@ export const convertToFormValues = (
         );
 
         convertedValues.forEach(([k, v]) =>
-          setValue(`${key}.${convertAttribute(k)}`, v)
+          setValue(`${key}.${beerify(k)}` as Path<T>, v)
         );
       } else {
-        setValue(key, undefined);
+        setValue(key, undefined as PathValue<T, Path<T>>);
       }
     } else {
       setValue(key, value);
     }
   });
-};
+}
 
 export function convertFormValuesToObject<T extends Record<string, any>, G = T>(
   obj: T
@@ -128,7 +141,7 @@ export function convertFormValuesToObject<T extends Record<string, any>, G = T>(
     } else if (key === "config" || key === "attributes") {
       result[key] = Object.fromEntries(
         Object.entries(value as Record<string, unknown>).map(([k, v]) => [
-          convertFormNameToAttribute(k),
+          debeerify(k),
           v,
         ])
       );

@@ -1,7 +1,7 @@
-import SidebarPage from "../support/pages/admin_console/SidebarPage";
+import SidebarPage from "../support/pages/admin-ui/SidebarPage";
 import LoginPage from "../support/pages/LoginPage";
-import RealmSettingsPage from "../support/pages/admin_console/manage/realm_settings/RealmSettingsPage";
-import Masthead from "../support/pages/admin_console/Masthead";
+import RealmSettingsPage from "../support/pages/admin-ui/manage/realm_settings/RealmSettingsPage";
+import Masthead from "../support/pages/admin-ui/Masthead";
 import { keycloakBefore } from "../support/util/keycloak_hooks";
 import adminClient from "../support/util/AdminClient";
 
@@ -97,8 +97,7 @@ describe("Realm settings tabs tests", () => {
     cy.findByTestId("email-tab-save").click();
     cy.get("#kc-display-name-helper").contains("You must enter a valid email.");
     cy.get("#kc-host-helper").contains("Required field");
-    //revert
-    cy.wait(100);
+
     cy.findByTestId("email-tab-revert").click();
     cy.findByTestId("sender-email-address").should("be.empty");
     cy.findByTestId("from-display-name").should("be.empty");
