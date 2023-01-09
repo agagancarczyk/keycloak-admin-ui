@@ -7,14 +7,12 @@ import {
   Tab,
   TabTitleText,
   ToolbarItem,
-  Tooltip,
 } from "@patternfly/react-core";
 import { cellWidth, IRowData, TableText } from "@patternfly/react-table";
 import type ClientRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientRepresentation";
 import type { ClientQuery } from "@keycloak/keycloak-admin-client/lib/resources/clients";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom-v5-compat";
 import { useAlerts } from "../components/alert/Alerts";
 import { useConfirmDialog } from "../components/confirm-dialog/ConfirmDialog";
@@ -36,15 +34,10 @@ import { isRealmClient, getProtocolName } from "./utils";
 import helpUrls from "../help-urls";
 import { useAccess } from "../context/access/Access";
 import {
-  routableTab,
   RoutableTabs,
+  useRoutableTab,
 } from "../components/routable-tabs/RoutableTabs";
 import { ClientsTab, toClients } from "./routes/Clients";
-import {
-  ClientRegistrationSubTab,
-  toClientRegistrationTab,
-} from "./routes/ClientRegistration";
-import { ClientRegistrationPolicyTabs } from "./client-registration/ClientRegistrationPolicyTabs";
 
 export default function ClientsSection() {
   const { t } = useTranslation("clients");
@@ -52,7 +45,6 @@ export default function ClientsSection() {
 
   const { adminClient } = useAdminClient();
   const { realm } = useRealm();
-  const history = useHistory();
 
   const [key, setKey] = useState(0);
   const refresh = () => setKey(new Date().getTime());
@@ -72,6 +64,11 @@ export default function ClientsSection() {
     }
     return await adminClient.clients.find({ ...params });
   };
+
+  const useTab = (tab: ClientsTab) => useRoutableTab(toClients({ realm, tab }));
+
+  const listTab = useTab("list");
+  const initialAccessTokenTab = useTab("initial-access-token");
 
   const [toggleDeleteDialog, DeleteConfirm] = useConfirmDialog({
     titleKey: t("clientDelete", { clientId: selectedClient?.clientId }),
@@ -146,18 +143,6 @@ export default function ClientsSection() {
     );
   };
 
-  const route = (tab: ClientsTab) =>
-    routableTab({
-      to: toClients({ realm, tab }),
-      history,
-    });
-
-  const toClientRegistrationRoute = (tab: ClientRegistrationSubTab) =>
-    routableTab({
-      to: toClientRegistrationTab({ realm, tab }),
-      history,
-    });
-
   return (
     <>
       <ViewHeader
@@ -178,7 +163,7 @@ export default function ClientsSection() {
           <Tab
             data-testid="list"
             title={<TabTitleText>{t("clientsList")}</TabTitleText>}
-            {...route("list")}
+            {...listTab}
           >
             <DeleteConfirm />
             <KeycloakDataTable
@@ -254,53 +239,9 @@ export default function ClientsSection() {
           <Tab
             data-testid="initialAccessToken"
             title={<TabTitleText>{t("initialAccessToken")}</TabTitleText>}
-            {...route("initial-access-token")}
+            {...initialAccessTokenTab}
           >
             <InitialAccessTokenList />
-          </Tab>
-          <Tab
-            title={<TabTitleText>{t("clientRegistration")}</TabTitleText>}
-            data-testid="rs-client-registration-tab"
-            {...route("client-registration")}
-          >
-            <RoutableTabs
-              mountOnEnter
-              defaultLocation={toClientRegistrationTab({
-                realm,
-                tab: "anonymous-access-policies",
-              })}
-            >
-              <Tab
-                id="anonymousAccessPolicies"
-                data-testid="rs-anonymous-access-policies-tab"
-                aria-label="anonymous-access-policies-tab"
-                title={
-                  <TabTitleText>{t("anonymousAccessPolicies")}</TabTitleText>
-                }
-                tooltip={
-                  <Tooltip content={t("anonymousAccessPoliciesHelpText")} />
-                }
-                {...toClientRegistrationRoute("anonymous-access-policies")}
-              >
-                <ClientRegistrationPolicyTabs type="anonymous" />
-              </Tab>
-              <Tab
-                id="authenticatedAccessPolicies"
-                data-testid="rs-authenticated-access-policies-tab"
-                aria-label="authenticated-access-policies-tab"
-                title={
-                  <TabTitleText>
-                    {t("authenticatedAccessPolicies")}
-                  </TabTitleText>
-                }
-                tooltip={
-                  <Tooltip content={t("authenticatedAccessPoliciesHelpText")} />
-                }
-                {...toClientRegistrationRoute("authenticated-access-policies")}
-              >
-                <ClientRegistrationPolicyTabs type="authenticated" />
-              </Tab>
-            </RoutableTabs>
           </Tab>
         </RoutableTabs>
       </PageSection>
